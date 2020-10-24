@@ -2,22 +2,30 @@
 
 # Classes
 class Character_stat:
-    def __init__(self, NAME):
+    def __init__(self, NAME, TEAM):
+        self.TEAM = ""
         self.NAME = ""
+        self.RACE = ""
         self.HP = 0
         self.ATK = 0
         self.DEF = 0
-        POISONED = False
-        FROZEN = False
-        RANK = 1
-        ALIVE = True
-        EXP = 0
+        self.POISONED = False
+        self.FROZEN = False
+        self.RANK = 1
+        self.ALIVE = True
+        self.EXP = 0
     
     def set_name(self, NAME):
         self.NAME = NAME
 
+    def set_team(self, TEAM):
+        self.TEAM = TEAM
+
+    def set_race(self, RACE):
+        self.RACE = RACE
+
     def show(self):
-        return self.NAME, self.HP, self.ATK, self.DEF
+        return self.RACE, self.NAME, self.HP, self.ATK, self.DEF, self.TEAM
 
 class Ogre(Character_stat):
     def __init__(self):
@@ -94,10 +102,13 @@ def setting_game():
         num = inputChecker(num, 3, "1. Ogre\n\tOgres have strong power, but have low accuracy\n\n2. Knight\n\tKnight have decent power and strong defence power\n\n3. Sorcerer\n\tSorcerer have weak body, but they can cast powerful magics\n")
         if num == 1:
             numPlayer[temp_1] = Ogre()
+            numPlayer[temp_1].set_race("Ogre")
         elif num == 2:
             numPlayer[temp_1] = Knight()
+            numPlayer[temp_1].set_race("Knight")
         else:
             numPlayer[temp_1] = Sorcerer()
+            numPlayer[temp_1].set_race("Sorcerer")
 
     # Object setting [Enemy Side]
     for num in range(num_player):
@@ -110,10 +121,13 @@ def setting_game():
         num = inputChecker(num, 3, "1. Ogre\n\tOgres have strong power, but have low accuracy\n\n2. Knight\n\tKnight have decent power and strong defence power\n\n3. Sorcerer\n\tSorcerer have weak body, but they can cast powerful magics\n")
         if num == 1:
             numEnemy[temp_1] = Ogre()
+            numEnemy[temp_1].set_race("Ogre")
         elif num == 2:
             numEnemy[temp_1] = Knight()
+            numEnemy[temp_1].set_race("Knight")
         else:
             numEnemy[temp_1] = Sorcerer()
+            numEnemy[temp_1].set_race("Sorcerer")
 
 
 def naming_units():
@@ -127,6 +141,8 @@ def naming_units():
             name = name.strip()
         player = numPlayer[num]
         player.set_name(name)
+        # Set TEAM
+        player.set_team("ALLY")
 
     for num in range(num_player):
         print("\n=============Name Enemy===================\n")
@@ -138,6 +154,8 @@ def naming_units():
             name = name.strip()
         player = numEnemy[num]
         player.set_name(name)
+        # Set TEAM
+        player.set_team("ENEMY")
 
 
 # Start
@@ -146,3 +164,9 @@ start_menu()
 if start == 1:
     setting_game()
     naming_units()
+
+for a in range(num_player):
+    print(numPlayer[a].show())
+
+for a in range(num_player):
+    print(numEnemy[a].show())
