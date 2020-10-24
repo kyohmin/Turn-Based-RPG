@@ -2,6 +2,9 @@
 
 # Classes
 class Character_stat:
+    ally_counter = 0
+    enemy_counter = 0
+
     def __init__(self, NAME, TEAM):
         self.TEAM = ""
         self.NAME = ""
@@ -25,10 +28,24 @@ class Character_stat:
         self.RACE = RACE
 
     def attack(self, TARGET):
-        TARGET.HP = TARGET.HP + TARGET.DEF - self.ATK
+        if self.ALIVE == True:
+            if self.TEAM == TARGET.TEAM:
+                print("NO FRIENDLY FIRE")
+            elif TARGET.ALIVE == False:
+                print("Can't attack the dead person")
+            else:
+                if TARGET.DEF >= self.ATK:
+                    pass
+                else:
+                    TARGET.HP = TARGET.HP + TARGET.DEF - self.ATK
+
+                if TARGET.HP <= 0:
+                    TARGET.ALIVE = False
+        else:
+            print("You can't attack when you are dead")
 
     def show(self):
-        return self.RACE, self.NAME, self.HP, self.ATK, self.DEF, self.TEAM, self.RANK
+        return self.RACE, self.NAME, self.HP, self.ATK, self.DEF, self.TEAM, self.RANK, self.ALIVE
 
 class Ogre(Character_stat):
     def __init__(self):
@@ -37,6 +54,7 @@ class Ogre(Character_stat):
         self.DEF = 3
         self.ACCURACY = .5
         self.RANK = 1
+        self.ALIVE = True
 
     def rank_up(self):
         if self.EXP >= 40 and self.RANK == 1:
@@ -57,6 +75,7 @@ class Knight(Character_stat):
         self.ATK = 5
         self.DEF = 5
         self.RANK = 1
+        self.ALIVE = True
 
     def rank_up(self):
         if self.EXP >= 40 and self.RANK == 1:
@@ -77,6 +96,7 @@ class Sorcerer(Character_stat):
         self.ATK = 3
         self.DEF = 2
         self.RANK = 1
+        self.ALIVE = True
 
     def rank_up(self):
         if self.EXP >= 40 and self.RANK == 1:
@@ -188,6 +208,7 @@ def naming_units():
         player.set_name(name)
         # Set TEAM
         player.set_team("ALLY")
+        Character_stat.ally_counter += 1
 
     for num in range(num_player):
         print("\n=============Name Enemy===================\n")
@@ -201,27 +222,70 @@ def naming_units():
         player.set_name(name)
         # Set TEAM
         player.set_team("ENEMY")
+        Character_stat.enemy_counter += 1
 
 def show_stats():
-    print("===========Players' Stats================")
+    print("\n===========Players' Stats================\n")
     for a in range(num_player):
         player = numPlayer[a].show()
-        print("RACE : {0}, NAME : {1}, HP : {2},\nATK : {3}, DEF : {4}, TEAM : {5}, RANK : {6}" \
-            .format(player[0], player[1], player[2], player[3], player[4], player[5], player[6]))
+        if player[7] == True:
+            print("RACE : {0}, NAME : {1}, HP : {2}, ATK : {3}, DEF : {4}, TEAM : {5}, RANK : {6}" \
+                .format(player[0], player[1], player[2], player[3], player[4], player[5], player[6]))
+        else:
+            print("{0} is DEAD" .format(player[1]))
     print()
     for a in range(num_player):
         enemy = numEnemy[a].show()
-        print("RACE : {0}, NAME : {1}, HP : {2},\nATK : {3}, DEF : {4}, TEAM : {5}, RANK : {6}" \
-            .format(enemy[0], enemy[1], enemy[2], enemy[3], enemy[4], enemy[5], enemy[6]))
-
+        if enemy[7] == True:
+            print("RACE : {0}, NAME : {1}, HP : {2}, ATK : {3}, DEF : {4}, TEAM : {5}, RANK : {6}" \
+                .format(enemy[0], enemy[1], enemy[2], enemy[3], enemy[4], enemy[5], enemy[6]))
+        else:
+            print("{0} is DEAD" .format(enemy[1]))
 
 
 # Start
-start_menu()
-if start == 1:
-    setting_game()
-    naming_units()
-    show_stats()
-    numPlayer[0].attack(numEnemy[0])
-    show_stats()
+def main():
+    GAME = True
+    turn = 1
+    start_menu()
+    if start == 1:
+        setting_game()
+        naming_units()
+        while GAME:
+            # Exit the game if ther is noone left
+            if Character_stat.ally_counter == 0 or Character_stat.enemy_counter == 0:
+                GAME = False
+            print(f"\nTURN : {turn}")
+            show_stats()
+            if (turn % 2) == 1:
+                print("\n==============Player Turn==============\n")
+                for a in range(num_player):
+                    print(str(a+1) + ".", numPlayer[a].show()[1] + " (" + numPlayer[a].show()[0] + ")")
+                player = input("\nChoose your player : ")
+                player = inputChecker(player, num_player, "OOPS")
+                player = int(player)
+                print(Character_stat.ally_counter, Character_stat.enemy_counter)
+                for a in range(num_player):
+                    print(str(a+1) + ".", numEnemy[a].show()[1] + " (" + numEnemy[a].show()[0] + ")")
+                enemy = input("\nWho would you attack? : ")
+                enemy = inputChecker(enemy, num_player, "OOPS")
+                enemy = int(enemy)
+                numPlayer[player-1].attack(numEnemy[enemy-1])
 
+            else:
+                print("\n==============Enemy Turn==============\n")
+                for a in range(num_player):
+                    print(str(a+1) + ".", numEnemy[a].show()[1] + " (" + numEnemy[a].show()[0] + ")")
+                player = input("\nChoose your player : ")
+                player = inputChecker(player, num_player, "OOPS")
+                player = int(player)
+                print()
+                for a in range(num_player):
+                    print(str(a+1) + ".", numPlayer[a].show()[1] + " (" + numPlayer[a].show()[0] + ")")
+                enemy = input("\nWho would you attack? : ")
+                enemy = inputChecker(enemy, num_player, "OOPS")
+                enemy = int(enemy)
+                numEnemy[player-1].attack(numPlayer[enemy-1])
+
+            turn += 1
+main()
