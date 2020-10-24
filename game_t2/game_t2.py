@@ -24,8 +24,11 @@ class Character_stat:
     def set_race(self, RACE):
         self.RACE = RACE
 
+    def attack(self, TARGET):
+        TARGET.HP = TARGET.HP + TARGET.DEF - self.ATK
+
     def show(self):
-        return self.RACE, self.NAME, self.HP, self.ATK, self.DEF, self.TEAM
+        return self.RACE, self.NAME, self.HP, self.ATK, self.DEF, self.TEAM, self.RANK
 
 class Ogre(Character_stat):
     def __init__(self):
@@ -33,18 +36,60 @@ class Ogre(Character_stat):
         self.ATK = 7
         self.DEF = 3
         self.ACCURACY = .5
+        self.RANK = 1
+
+    def rank_up(self):
+        if self.EXP >= 40 and self.RANK == 1:
+            self.HP = 45
+            self.ATK = 8
+            self.DEF = 4
+            self.RANK = 2
+        
+        elif self.EXP >= 40 and self.RANK == 2:
+            self.HP = 50
+            self.ATK = 12
+            self.DEF = 5
+            self.RANK = 3
 
 class Knight(Character_stat):
     def __init__(self):
         self.HP = 45
         self.ATK = 5
         self.DEF = 5
+        self.RANK = 1
+
+    def rank_up(self):
+        if self.EXP >= 40 and self.RANK == 1:
+            self.HP = 50
+            self.ATK = 6
+            self.DEF = 6
+            self.RANK = 2
+        
+        elif self.EXP >= 40 and self.RANK == 2:
+            self.HP = 60
+            self.ATK = 8
+            self.DEF = 8
+            self.RANK = 3
 
 class Sorcerer(Character_stat):
     def __init__(self):
         self.HP = 30
         self.ATK = 3
         self.DEF = 2
+        self.RANK = 1
+
+    def rank_up(self):
+        if self.EXP >= 40 and self.RANK == 1:
+            self.HP = 35
+            self.ATK = 4
+            self.DEF = 3
+            self.RANK = 2
+        
+        elif self.EXP >= 40 and self.RANK == 2:
+            self.HP = 40
+            self.ATK = 6
+            self.DEF = 5
+            self.RANK = 3
 
 # Functions
 def inputChecker(Choice, End, Message):
@@ -157,16 +202,26 @@ def naming_units():
         # Set TEAM
         player.set_team("ENEMY")
 
+def show_stats():
+    print("===========Players' Stats================")
+    for a in range(num_player):
+        player = numPlayer[a].show()
+        print("RACE : {0}, NAME : {1}, HP : {2},\nATK : {3}, DEF : {4}, TEAM : {5}, RANK : {6}" \
+            .format(player[0], player[1], player[2], player[3], player[4], player[5], player[6]))
+    print()
+    for a in range(num_player):
+        enemy = numEnemy[a].show()
+        print("RACE : {0}, NAME : {1}, HP : {2},\nATK : {3}, DEF : {4}, TEAM : {5}, RANK : {6}" \
+            .format(enemy[0], enemy[1], enemy[2], enemy[3], enemy[4], enemy[5], enemy[6]))
+
+
 
 # Start
 start_menu()
-
 if start == 1:
     setting_game()
     naming_units()
+    show_stats()
+    numPlayer[0].attack(numEnemy[0])
+    show_stats()
 
-for a in range(num_player):
-    print(numPlayer[a].show())
-
-for a in range(num_player):
-    print(numEnemy[a].show())
