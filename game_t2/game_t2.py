@@ -43,6 +43,13 @@ class Unit:
                 else:
                     TARGET.HP = TARGET.HP + TARGET.DEF - self.ATK
 
+                    # EXP GAIN [ALLY]
+                    self.EXP += self.ATK
+
+                    # EXP GAIN [ENEMY]
+                    TARGET.EXP += TARGET.DEF
+
+
                 if TARGET.HP <= 0:
                     TARGET.ALIVE = False
         else:
@@ -50,7 +57,7 @@ class Unit:
 
     # Stats of the unit
     def stat(self):
-        return self.RACE, self.NAME, self.HP, self.ATK, self.DEF, self.TEAM, self.RANK, self.ALIVE
+        return self.RACE, self.NAME, self.HP, self.ATK, self.DEF, self.TEAM, self.RANK, self.ALIVE, self.EXP
 
 class Ogre(Unit):
     def __init__(self):
@@ -59,6 +66,7 @@ class Ogre(Unit):
         self.DEF = 3
         self.ACCURACY = .5
         self.RANK = 1
+        self.EXP = 0
         self.ALIVE = True
 
     def rank_up(self):
@@ -66,12 +74,14 @@ class Ogre(Unit):
             self.HP = 45
             self.ATK = 8
             self.DEF = 4
+            self.EXP = 0
             self.RANK = 2
         
         elif self.EXP >= 40 and self.RANK == 2:
             self.HP = 50
             self.ATK = 12
             self.DEF = 5
+            self.EXP = 0
             self.RANK = 3
 
 class Knight(Unit):
@@ -80,6 +90,7 @@ class Knight(Unit):
         self.ATK = 5
         self.DEF = 5
         self.RANK = 1
+        self.EXP = 0
         self.ALIVE = True
 
     def rank_up(self):
@@ -87,12 +98,14 @@ class Knight(Unit):
             self.HP = 50
             self.ATK = 6
             self.DEF = 6
+            self.EXP = 0
             self.RANK = 2
         
         elif self.EXP >= 40 and self.RANK == 2:
             self.HP = 60
             self.ATK = 8
             self.DEF = 8
+            self.EXP = 0
             self.RANK = 3
 
 class Sorcerer(Unit):
@@ -101,6 +114,7 @@ class Sorcerer(Unit):
         self.ATK = 3
         self.DEF = 2
         self.RANK = 1
+        self.EXP = 0
         self.ALIVE = True
 
     # Magic
@@ -119,12 +133,14 @@ class Sorcerer(Unit):
             self.HP = 35
             self.ATK = 4
             self.DEF = 3
+            self.EXP = 0
             self.RANK = 2
         
         elif self.EXP >= 40 and self.RANK == 2:
             self.HP = 40
             self.ATK = 6
             self.DEF = 5
+            self.EXP = 0
             self.RANK = 3
 
 # Functions====================================================
@@ -150,7 +166,7 @@ def start_menu():
 
     top_line("MAIN MENU")
     print("Welcome to the game!")
-    print("\n1. Start the Game\n2. Look at the save files\n")
+    print("\n1. Start the Game\n2. Quit\n")
     start = input("Choose one : ")
     start = inputChecker(start, 2, "\n1. Start the Game\n2. Quit\n")
 
@@ -252,21 +268,25 @@ def show_stats():
     top_line("PLAYER'S STAT")
     for a in range(num_player):
         player = objs_ally[a].stat()
+        objs_ally[a].rank_up()
         if player[7] == True:
-            print("\nRACE : {0} / NAME : {1} / HP : {2} / ATK : {3} / DEF : {4} / TEAM : {5} / RANK : {6}" \
-                .format(player[0], player[1], player[2], player[3], player[4], player[5], player[6]))
+            print("\nRACE : {0} / NAME : {1} / HP : {2} / ATK : {3} / DEF : {4} / TEAM : {5} / RANK : {6} / EXP : {7}" \
+                .format(player[0], player[1], player[2], player[3], player[4], player[5], player[6], player[8]))
         else:
             print("\n{0} is DEAD" .format(player[1]))
+            Unit.ally_counter -= 1
     
     print()
 
     for a in range(num_player):
         enemy = objs_enemy[a].stat()
+        objs_enemy[a].rank_up()
         if enemy[7] == True:
-            print("\nRACE : {0} / NAME : {1} / HP : {2} / ATK : {3} / DEF : {4} / TEAM : {5} / RANK : {6}" \
-                .format(enemy[0], enemy[1], enemy[2], enemy[3], enemy[4], enemy[5], enemy[6]))
+            print("\nRACE : {0} / NAME : {1} / HP1 : {2} / ATK : {3} / DEF : {4} / TEAM : {5} / RANK : {6} / EXP : {7}" \
+                .format(enemy[0], enemy[1], enemy[2], enemy[3], enemy[4], enemy[5], enemy[6], enemy[8]))
         else:
             print("\n{0} is DEAD" .format(enemy[1]))
+            Unit.enemy_counter -= 1
 
 def play():
     GAME = True
@@ -274,8 +294,7 @@ def play():
     if start == 1:
         while GAME:
             # Exit the game if ther is noone left
-            if Unit.ally_counter == 0 or Unit.enemy_counter == 0:
-                GAME = False
+            if Unit.ally_counter == 0 or Unit.enemy_counter == 0: break
             print(f"\nTURN : {turn}")
             show_stats()
 
@@ -283,7 +302,9 @@ def play():
             turn_line(turn, "ALLY'S TURN")
             print()
             for a in range(num_player):
-                print(str(a+1) + ".", objs_ally[a].stat()[1] + " (" + objs_ally[a].stat()[0] + ")")
+                ally_obj = objs_ally[a].stat()
+                if ally_obj[7] == True:
+                    print(str(a+1) + ".", objs_ally[a].stat()[1] + " (" + objs_ally[a].stat()[0] + ")")
             player = input("\nChoose your player : ")
             while not player.isdigit() or int(player) < 0 or int(player) > num_player:
                 for a in range(num_player):
@@ -292,7 +313,9 @@ def play():
             player = int(player)
 
             for a in range(num_player):
-                print(str(a+1) + ".", objs_enemy[a].stat()[1] + " (" + objs_enemy[a].stat()[0] + ")")
+                enemy_obj = objs_enemy[a].stat()
+                if enemy_obj[7] == True:
+                    print(str(a+1) + ".", objs_enemy[a].stat()[1] + " (" + objs_enemy[a].stat()[0] + ")")
             enemy = input("\nWho would you attack? : ")
             while not enemy.isdigit() or int(enemy) < 0 or int(enemy) > num_player:
                 for a in range(num_player):
@@ -302,12 +325,15 @@ def play():
             objs_ally[player-1].attack(objs_enemy[enemy-1])
 
             show_stats()
+            if Unit.ally_counter == 0 or Unit.enemy_counter == 0: break
 
             # ENEMY'S TURN
             turn_line(turn, "ENEMY'S TURN")
             print()
             for a in range(num_player):
-                print(str(a+1) + ".", objs_enemy[a].stat()[1] + " (" + objs_enemy[a].stat()[0] + ")")
+                enemy_obj = objs_enemy[a].stat()
+                if enemy_obj[7] == True:
+                    print(str(a+1) + ".", enemy_obj[1] + " (" + enemy_obj[0] + ")")
             player = input("\nChoose your player : ")
             while not player.isdigit() or int(player) < 0 or int(player) > num_player:
                 for a in range(num_player):
@@ -316,7 +342,9 @@ def play():
             player = int(player)
             print()
             for a in range(num_player):
-                print(str(a+1) + ".", objs_ally[a].stat()[1] + " (" + objs_ally[a].stat()[0] + ")")
+                ally_obj = objs_ally[a].stat()
+                if ally_obj[7] == True:
+                    print(str(a+1) + ".", ally_obj[1] + " (" + ally_obj[0] + ")")
             enemy = input("\nWho would you attack? : ")
             while not enemy.isdigit() or int(enemy) < 0 or int(enemy) > num_player:
                 for a in range(num_player):
@@ -331,7 +359,8 @@ def play():
 # Start
 def main():
     start_menu()
-    setting_game()
-    play()
+    if start == 1:
+        setting_game()
+        play()
     
 main()
