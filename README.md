@@ -1,5 +1,5 @@
 ## Turn Based RPG
-+ Introduction to Programming Team 2
++ Introduction to Programming Team 1
 
 ## How to Play
 ```
