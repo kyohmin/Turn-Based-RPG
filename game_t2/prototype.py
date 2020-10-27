@@ -203,7 +203,7 @@ def setting_game():
         print("\n1. [Ogre]\n\tOgres have strong power, but have low accuracy\n")
         print("2. [Knight]\n\tKnight have decent power and strong defence power\n")
         print("3. [Sorcerer]\n\tSorcerer have weak body, but they can cast powerful magics\n")
-        num = input("Choose one : ")
+        num = input("Choose one for player %d: " %(num+1))                     #added "for player" and %d to specify number(easy to recognize)
         num = inputChecker(num, 3, "\n1. [Ogre]\n\tOgres have strong power, but have low accuracy\n\n2. [Knight]\n\tKnight have decent power and strong defence power\n\n3. [Sorcerer]\n\tSorcerer have weak body, but they can cast powerful magics\n")
         if num == 1:
             objs_ally[temp_1] = Ogre()
@@ -222,7 +222,7 @@ def setting_game():
         print("\n1. [Ogre]\n\tOgres have strong power, but have low accuracy\n")
         print("2. [Knight]\n\tKnight have decent power and strong defence power\n")
         print("3. [Sorcerer]\n\tSorcerer have weak body, but they can cast powerful magics\n")
-        num = input("Choose one : ")
+        num = input("Choose one for enemy %d: " %(num+1))                        #added "for enemy" and %d to specify number(easy to recognize)
         num = inputChecker(num, 3, "\n1. [Ogre]\n\tOgres have strong power, but have low accuracy\n\n2. [Knight]\n\tKnight have decent power and strong defence power\n\n3. [Sorcerer]\n\tSorcerer have weak body, but they can cast powerful magics\n")
         if num == 1:
             objs_enemy[temp_1] = Ogre()
