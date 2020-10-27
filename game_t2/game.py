@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from random import randrange
 excel_file = pd.read_excel('CStat.xlsx')
       
 # Characters Stats==============================
@@ -9,7 +10,7 @@ class Unit:
         self.EXP = 40
         self.FIGHTABLE = True
         self.ALIVE = True
-        self.FROZEN = True
+        self.FROZEN = False
         self.POISONED = False
 
     def set_NT(self, NAME, TEAM):
@@ -18,9 +19,6 @@ class Unit:
 
     def show_stats(self):
         return self.NAME, self.RACE, self.HP, self.ATK, self.DEF, self.FROZEN, self.POISONED, self.EXP, self.RANK, self.ALIVE
-
-    def exp_system(self):
-        self.EXP += 19
     
     def attack_system(self):
         pass
@@ -335,8 +333,18 @@ def setting_RN():
 
         enemy_object[num].set_NT(name, "ENEMY")
 
+def seg_UI(num):
+    unit_stat = ally_object[num].show_stats()
+    if unit_stat[1] == "Ogre" or unit_stat[1] == "Knight":
+        print("┃        HP : {0}        ATK : {1}        DEF : {2}" .format(unit_stat[2], unit_stat[3], unit_stat[4]) + " "*(23 - (len(str(unit_stat[2])) + len(str(unit_stat[3])) + len(str(unit_stat[4])))) + "┃                             ┃                            ┃")
+        print("┃        EXP : {0}       RANK : {1}       RACE : {2}" . format(unit_stat[7], unit_stat[8], unit_stat[1]) + " "*(21 - (len(str(unit_stat[7])) + len(str(unit_stat[1])))) + "┃                             ┃                            ┃")
+        print("┃                                                                ┃                             ┃                            ┃")
+    elif unit_stat[1] == "Sorcerer":
+        print("┃        HP : {0}        ATK : {1}        DEF : {2}" .format(unit_stat[2], unit_stat[3], unit_stat[4]) + " "*(23 - (len(str(unit_stat[2])) + len(str(unit_stat[3])) + len(str(unit_stat[4])))) + "┃                             ┃                            ┃")
+
 # MAIN UI
 def main_UI():
+    
     GAME = True
     turn = 1
     while GAME:
@@ -353,36 +361,44 @@ def main_UI():
         print("┃                                                                ┃                             ┃                            ┃")
         for num in range(num_players):
             unit_stat = ally_object[num].show_stats()
-            if unit_stat[1] == "Ogre" or unit_stat[1] == "Knight":
-                if unit_stat[5] == True and unit_stat[6] == True:
-                    # First row
-                    print("┃   {name} (Frozen & Poisoned) : " .format(name = unit_stat[0]) + " " * (38 - len(unit_stat[0])) + "┃                             ┃                            ┃")
-                    # Second row
-                    print("┃        HP : {0}        ATK : {1}        DEF : {2}" .format(unit_stat[2], unit_stat[3], unit_stat[4]) + " "*(15 - len(str(unit_stat[2])) + len(str(unit_stat[3])) + len(str(unit_stat[4]))) + "┃                             ┃                            ┃")
-                    # Third row
-                    print("┃                 EXP : {0}       RANK : {1}" . format(unit_stat[7], unit_stat[8]) + " "*(26 - len(str(unit_stat[7]))) + "┃                             ┃                            ┃")
-                    print("┃                                                                ┃                             ┃                            ┃")
-                elif unit_stat[5] == True:
-                    # First row
-                    print("┃   {name} (Frozen) : " .format(name = unit_stat[0]) + " " * (49 - len(unit_stat[0])) + "┃                             ┃                            ┃")
-                    # Second row
-                    print("┃        HP : {0}        ATK : {1}        DEF : {2}" .format(unit_stat[2], unit_stat[3], unit_stat[4]) + " "*(15 - len(str(unit_stat[2])) + len(str(unit_stat[3])) + len(str(unit_stat[4]))) + "┃                             ┃                            ┃")
-                    # Third row
-                    print("┃        EXP : {0}       RANK : {1}       RACE : {2}" . format(unit_stat[7], unit_stat[8], unit_stat[1]) + " "*(14 - len(str(unit_stat[7])) + len(str(unit_stat[1]))) + "┃                             ┃                            ┃")
-                    print("┃                                                                ┃                             ┃                            ┃")
+
+            if unit_stat[5] == True and unit_stat[6] == True:
+                # FROZEN & POISONED
+                # First row
+                print("┃   {name} (Frozen & Poisoned) : " .format(name = unit_stat[0]) + " " * (38 - len(unit_stat[0])) + "┃                             ┃                            ┃")
+                # Second row
+                seg_UI(num)
+
+            elif unit_stat[5] == True:
+                # FROZEN
+                # First row
+                print("┃   {name} (Frozen) : " .format(name = unit_stat[0]) + " " * (49 - len(unit_stat[0])) + "┃                             ┃                            ┃")
+                # Second row
+                seg_UI(num)
+                
+            elif unit_stat[6] == True:
+                # POISONED
+                # First row
+                print("┃   {name} (Poisoned) : " .format(name = unit_stat[0]) + " " * (47 - len(unit_stat[0])) + "┃   {num}. {name}" .format(num = num + 1, name = unit_stat[0]) + " " * (24 - (len(str(num)) + len(str(unit_stat[0])))) + "┃   1. ATK                   ┃")
+                # Second row
+                seg_UI(num)
+                
+            else:
+                if unit_stat[9] == True:
+                    # ALIVE
+                    print("┃   {name} : " .format(name = unit_stat[0]) + " " * (58 - len(unit_stat[0])) + "┃   {num}. {name}" .format(num = num + 1, name = unit_stat[0]) + " " * (24 - (len(str(num)) + len(str(unit_stat[0])))) + "┃   1. ATK                   ┃")
+                    seg_UI(num)
                     
-                elif unit_stat[6] == True:
-                    pass
                 else:
-                    if unit_stat[9] == True:
-                        pass
-                    else:
-                        pass
-            elif unit_stat[1] == "Sorcerer":
-                print("")
+                    # DEAD
+                    unit_stat[9] = False
+                    print("┃   {name} : DEAD" .format(name = unit_stat[0]) + " " * (54 - len(unit_stat[0])) + "┃                             ┃                            ┃")
+                    print("┃                                                                ┃                             ┃                            ┃")
 
         turn += 1
         GAME = False
+
+    
 
 # List for Objects
 def list_objects():
