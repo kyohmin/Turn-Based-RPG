@@ -306,7 +306,7 @@ def setting_RN():
 
         # Naming the Object
         clean_screen()
-        print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳")
+        print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
         print("┃         <GIVE A NAME TO YOUR ENEMY>        ┃")
         print("┃                                            ┃")
         print("┃        * Do not type blank or space        ┃")
@@ -340,7 +340,50 @@ def seg_UI(num):
         print("┃        EXP : {0}       RANK : {1}       RACE : {2}" . format(unit_stat[7], unit_stat[8], unit_stat[1]) + " "*(21 - (len(str(unit_stat[7])) + len(str(unit_stat[1])))) + "┃                             ┃                            ┃")
         print("┃                                                                ┃                             ┃                            ┃")
     elif unit_stat[1] == "Sorcerer":
-        print("┃        HP : {0}        ATK : {1}        DEF : {2}" .format(unit_stat[2], unit_stat[3], unit_stat[4]) + " "*(23 - (len(str(unit_stat[2])) + len(str(unit_stat[3])) + len(str(unit_stat[4])))) + "┃                             ┃                            ┃")
+        if unit_stat[5] == True:
+            print("┃        HP : {0}        ATK : {1}        DEF : {2}" .format(unit_stat[2], unit_stat[3], unit_stat[4]) + " "*(23 - (len(str(unit_stat[2])) + len(str(unit_stat[3])) + len(str(unit_stat[4])))) + "┃                             ┃                            ┃")
+            print("┃        EXP : {0}       RANK : {1}       RACE : {2}" . format(unit_stat[7], unit_stat[8], unit_stat[1]) + " "*(21 - (len(str(unit_stat[7])) + len(str(unit_stat[1])))) + "┃                             ┃                            ┃")
+            print("┃                                                                ┃                             ┃                            ┃")
+        else:
+            print("┃        HP : {0}        ATK : {1}        DEF : {2}" .format(unit_stat[2], unit_stat[3], unit_stat[4]) + " "*(23 - (len(str(unit_stat[2])) + len(str(unit_stat[3])) + len(str(unit_stat[4])))) + "┃                             ┃   2. CURE                  ┃")
+            print("┃        EXP : {0}       RANK : {1}       RACE : {2}" . format(unit_stat[7], unit_stat[8], unit_stat[1]) + " "*(21 - (len(str(unit_stat[7])) + len(str(unit_stat[1])))) + "┃                             ┃   3. FREEZE                ┃")
+            print("┃                                                                ┃                             ┃   4. POISON                ┃")
+            print("┃                                                                ┃                             ┃                            ┃")
+
+def big_seg_UI(num):
+    if unit_stat[5] == True and unit_stat[6] == True:
+        # FROZEN & POISONED
+        # First row
+        print("┃   {name} (Frozen & Poisoned) : " .format(name = unit_stat[0]) + " " * (38 - len(unit_stat[0])) + "┃                             ┃                            ┃")
+        # Second row
+        seg_UI(num)
+
+    elif unit_stat[5] == True:
+        # FROZEN
+        # First row
+        print("┃   {name} (Frozen) : " .format(name = unit_stat[0]) + " " * (49 - len(unit_stat[0])) + "┃                             ┃                            ┃")
+        # Second row
+        seg_UI(num)
+        
+    elif unit_stat[6] == True:
+        # POISONED
+        # First row
+        print("┃   {name} (Poisoned) : " .format(name = unit_stat[0]) + " " * (47 - len(unit_stat[0])) + "┃   {num}. {name}" .format(num = num + 1, name = unit_stat[0]) + " " * (24 - (len(str(num)) + len(str(unit_stat[0])))) + "┃   1. ATTACK                ┃")
+        # Second row
+        seg_UI(num)
+        
+    else:
+        if unit_stat[9] == True:
+            # ALIVE
+            print("┃   {name} : " .format(name = unit_stat[0]) + " " * (58 - len(unit_stat[0])) + "┃   {num}. {name}" .format(num = num + 1, name = unit_stat[0]) + " " * (24 - (len(str(num)) + len(str(unit_stat[0])))) + "┃   1. ATTACK                ┃")
+            seg_UI(num)
+            
+        else:
+            # DEAD
+            unit_stat[9] = False
+            print("┃   {name} : DEAD" .format(name = unit_stat[0]) + " " * (54 - len(unit_stat[0])) + "┃                             ┃                            ┃")
+            print("┃                                                                ┃                             ┃                            ┃")
+
 
 # MAIN UI
 def main_UI():
@@ -348,12 +391,14 @@ def main_UI():
     GAME = True
     turn = 1
     while GAME:
+        global unit_stat
         clean_screen()
 
         # INIT and Check for Rank Up
         for num in range(num_players):
             ally_object[num].rank_up()
             enemy_object[num].rank_up()
+        
         print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
         print("┃  [STATS]                                                       ┃  [AVAILABLE UNITS]          ┃  [AVAILABLE MOVES]         ┃")
         print("┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫")
@@ -361,40 +406,17 @@ def main_UI():
         print("┃                                                                ┃                             ┃                            ┃")
         for num in range(num_players):
             unit_stat = ally_object[num].show_stats()
+            big_seg_UI(num)
+        
+        print("┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫")
+        print("┃  -ENEMY'S TEAM-                                                ┃   -ENEMY'S TEAM-            ┃   -ENEMY'S TEAM-           ┃")
+        print("┃                                                                ┃                             ┃                            ┃")
 
-            if unit_stat[5] == True and unit_stat[6] == True:
-                # FROZEN & POISONED
-                # First row
-                print("┃   {name} (Frozen & Poisoned) : " .format(name = unit_stat[0]) + " " * (38 - len(unit_stat[0])) + "┃                             ┃                            ┃")
-                # Second row
-                seg_UI(num)
+        for num in range(num_players):
+            unit_stat = enemy_object[num].show_stats()
+            big_seg_UI(num)
 
-            elif unit_stat[5] == True:
-                # FROZEN
-                # First row
-                print("┃   {name} (Frozen) : " .format(name = unit_stat[0]) + " " * (49 - len(unit_stat[0])) + "┃                             ┃                            ┃")
-                # Second row
-                seg_UI(num)
-                
-            elif unit_stat[6] == True:
-                # POISONED
-                # First row
-                print("┃   {name} (Poisoned) : " .format(name = unit_stat[0]) + " " * (47 - len(unit_stat[0])) + "┃   {num}. {name}" .format(num = num + 1, name = unit_stat[0]) + " " * (24 - (len(str(num)) + len(str(unit_stat[0])))) + "┃   1. ATK                   ┃")
-                # Second row
-                seg_UI(num)
-                
-            else:
-                if unit_stat[9] == True:
-                    # ALIVE
-                    print("┃   {name} : " .format(name = unit_stat[0]) + " " * (58 - len(unit_stat[0])) + "┃   {num}. {name}" .format(num = num + 1, name = unit_stat[0]) + " " * (24 - (len(str(num)) + len(str(unit_stat[0])))) + "┃   1. ATK                   ┃")
-                    seg_UI(num)
-                    
-                else:
-                    # DEAD
-                    unit_stat[9] = False
-                    print("┃   {name} : DEAD" .format(name = unit_stat[0]) + " " * (54 - len(unit_stat[0])) + "┃                             ┃                            ┃")
-                    print("┃                                                                ┃                             ┃                            ┃")
-
+        print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
         turn += 1
         GAME = False
 
