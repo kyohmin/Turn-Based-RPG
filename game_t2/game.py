@@ -7,7 +7,7 @@ excel_file = pd.read_excel('CStat.xlsx')
 class Unit:
     def __init__(self):
         self.RANK = 0
-        self.EXP = 40
+        self.EXP = 100
         self.FIGHTABLE = True
         self.ALIVE = True
         self.FROZEN = False
@@ -20,14 +20,28 @@ class Unit:
     def show_stats(self):
         return self.NAME, self.RACE, self.HP, self.ATK, self.DEF, self.FROZEN, self.POISONED, self.EXP, self.RANK, self.ALIVE
     
-    def attack_system(self):
-        pass
+    def attack(self, TARGET):
+        if TARGET.DEF > self.ATK:
+            pass
+
+        else:
+            TARGET.HP = TARGET.HP + TARGET.DEF - self.ATK
+
+            # EXP system
+            self.EXP += self.ATK
+            TARGET.EXP += TARGET.DEF
+
+            self.rank_up()
+            TARGET.rank_up()
+                
+
+
     
     def special_power_system(self):
         pass
 
     def rank_up(self):
-        if self.EXP >= 40:
+        if self.EXP >= 100:
             if self.ID < self.MAX_ID:
                 self.EXP = 0
                 self.RACE = str(excel_file['Race'][self.ID])
@@ -38,6 +52,9 @@ class Unit:
                 self.ID += 1
             else:
                 self.ID = self.MAX_ID
+        
+        if self.HP <= 0:
+            self.ALIVE = False
 
 class Ogre(Unit):
     def __init__(self):
@@ -334,7 +351,6 @@ def setting_RN():
         enemy_object[num].set_NT(name, "ENEMY")
 
 def seg_UI(num):
-    unit_stat = ally_object[num].show_stats()
     if unit_stat[1] == "Ogre" or unit_stat[1] == "Knight":
         print("┃        HP : {0}        ATK : {1}        DEF : {2}" .format(unit_stat[2], unit_stat[3], unit_stat[4]) + " "*(23 - (len(str(unit_stat[2])) + len(str(unit_stat[3])) + len(str(unit_stat[4])))) + "┃                             ┃                            ┃")
         print("┃        EXP : {0}       RANK : {1}       RACE : {2}" . format(unit_stat[7], unit_stat[8], unit_stat[1]) + " "*(21 - (len(str(unit_stat[7])) + len(str(unit_stat[1])))) + "┃                             ┃                            ┃")
@@ -351,6 +367,9 @@ def seg_UI(num):
             print("┃                                                                ┃                             ┃                            ┃")
 
 def big_seg_UI(num):
+    global avaiablility
+    availability = False
+
     if unit_stat[5] == True and unit_stat[6] == True:
         # FROZEN & POISONED
         # First row
@@ -371,56 +390,85 @@ def big_seg_UI(num):
         print("┃   {name} (Poisoned) : " .format(name = unit_stat[0]) + " " * (47 - len(unit_stat[0])) + "┃   {num}. {name}" .format(num = num + 1, name = unit_stat[0]) + " " * (24 - (len(str(num)) + len(str(unit_stat[0])))) + "┃   1. ATTACK                ┃")
         # Second row
         seg_UI(num)
+        availability = True
         
     else:
         if unit_stat[9] == True:
             # ALIVE
             print("┃   {name} : " .format(name = unit_stat[0]) + " " * (58 - len(unit_stat[0])) + "┃   {num}. {name}" .format(num = num + 1, name = unit_stat[0]) + " " * (24 - (len(str(num)) + len(str(unit_stat[0])))) + "┃   1. ATTACK                ┃")
             seg_UI(num)
+            avaiablility = True
             
         else:
             # DEAD
-            unit_stat[9] = False
             print("┃   {name} : DEAD" .format(name = unit_stat[0]) + " " * (54 - len(unit_stat[0])) + "┃                             ┃                            ┃")
             print("┃                                                                ┃                             ┃                            ┃")
 
 
 # MAIN UI
 def main_UI():
+    global unit_stat
+    global available_ally
+    global available_enemy
+    available_ally = []
+    available_enemy = []
+
+    clean_screen()
+    # INIT and Check for Rank Up
+    for num in range(num_players):
+        ally_object[num].rank_up()
+        enemy_object[num].rank_up()
     
-    GAME = True
-    turn = 1
-    while GAME:
-        global unit_stat
-        clean_screen()
-
-        # INIT and Check for Rank Up
-        for num in range(num_players):
-            ally_object[num].rank_up()
-            enemy_object[num].rank_up()
-        
-        print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
-        print("┃  [STATS]                                                       ┃  [AVAILABLE UNITS]          ┃  [AVAILABLE MOVES]         ┃")
-        print("┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫")
-        print("┃  -ALLY'S TEAM-                                                 ┃   -ALLY'S TEAM-             ┃   -ALLY'S TEAM-            ┃")
-        print("┃                                                                ┃                             ┃                            ┃")
-        for num in range(num_players):
-            unit_stat = ally_object[num].show_stats()
-            big_seg_UI(num)
-        
-        print("┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫")
-        print("┃  -ENEMY'S TEAM-                                                ┃   -ENEMY'S TEAM-            ┃   -ENEMY'S TEAM-           ┃")
-        print("┃                                                                ┃                             ┃                            ┃")
-
-        for num in range(num_players):
-            unit_stat = enemy_object[num].show_stats()
-            big_seg_UI(num)
-
-        print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
-        turn += 1
-        GAME = False
-
+    print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+    print("┃  [STATS]                                                       ┃  [AVAILABLE UNITS]          ┃  [AVAILABLE MOVES]         ┃")
+    print("┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫")
+    print("┃  -ALLY'S TEAM-                                                 ┃   -ALLY'S TEAM-             ┃   -ALLY'S TEAM-            ┃")
+    print("┃                                                                ┃                             ┃                            ┃")
+    for num in range(num_players):
+        unit_stat = ally_object[num].show_stats()
+        big_seg_UI(num)
+        if avaiablility == True:
+            available_ally.append(num+1)
     
+    print("┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫")
+    print("┃  -ENEMY'S TEAM-                                                ┃   -ENEMY'S TEAM-            ┃   -ENEMY'S TEAM-           ┃")
+    print("┃                                                                ┃                             ┃                            ┃")
+
+    for num in range(num_players):
+        unit_stat = enemy_object[num].show_stats()
+        big_seg_UI(num)
+        if avaiablility == True:
+            available_enemy.append(num+1)
+
+    print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
+
+    input("\n Press Enter ")
+
+def ally_UI():
+    global unit_stat
+    clean_screen()
+    print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+    print("┃  [ALLY STAT - TURN {turn}]" .format(turn = turn) + " "*(43 - len(str(turn))) + "┃  [AVAILABLE UNITS]          ┃  [AVAILABLE MOVES]         ┃")
+    print("┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫")
+    print("┃  -ALLY'S TEAM-                                                 ┃   -ALLY'S TEAM-             ┃   -ALLY'S TEAM-            ┃")
+    print("┃                                                                ┃                             ┃                            ┃")
+    for num in range(num_players):
+        unit_stat = ally_object[num].show_stats()
+        big_seg_UI(num)
+    print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
+
+def enemy_UI():
+    global unit_stat
+    clean_screen()
+    print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+    print("┃  [ENEMY STAT - TURN {turn}]" .format(turn = turn) + " "*(42 - len(str(turn))) + "┃  [AVAILABLE UNITS]          ┃  [AVAILABLE MOVES]         ┃")
+    print("┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫")
+    print("┃  -ENEMY'S TEAM-                                                ┃   -ENEMY'S TEAM-            ┃   -ENEMY'S TEAM-           ┃")
+    print("┃                                                                ┃                             ┃                            ┃")
+    for num in range(num_players):
+        unit_stat = enemy_object[num].show_stats()
+        big_seg_UI(num)
+    print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 
 # List for Objects
 def list_objects():
@@ -442,6 +490,9 @@ def clean_screen():
 
 # GAME LOGIC ===========================================================
 def main():
+    global turn
+    GAME = True
+    turn = 1
     main_menu()
     if menu_input == 1:
         setting_enemy()
@@ -449,9 +500,90 @@ def main():
             setting_size()
             list_objects()
             setting_RN()
-            main_UI()
+            while GAME:
+                main_UI()
+                
+                # Game play
+                ally_UI()
+                if len(available_ally) > 0:
+                    if len(available_ally) == 1:
+                        unit_select = input("\n Choose the avaiable unit in your team ({num}): " .format(num = len(available_ally)))
+                        while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) != len(available_ally):
+                            ally_UI()
+                            print("\n YOU ENTERED WRONG VALUE")
+                            unit_select = input("\n Choose the avaiable unit in your team ({num}): " .format(num = len(available_ally)))
+
+                        enemy_UI()
+                        opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))
+                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_enemy):
+                            enemy_UI()
+                            print("\n YOU ENTERED WRONG VALUE")
+                            opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_enemy)))
+
+                        ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+                    else:
+                        unit_select = input("\n Choose the avaiable unit in your team (1~{num}): " .format(num = len(available_ally)))
+                        while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally):
+                            ally_UI()
+                            print("\n YOU ENTERED WRONG VALUE")
+                            unit_select = input("\n Choose the avaiable unit in your team (1~{num}): " .format(num = len(available_ally)))
+
+                        enemy_UI()
+                        opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_enemy)))
+                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_enemy):
+                            enemy_UI()
+                            print("\n YOU ENTERED WRONG VALUE")
+                            opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_ally)))
+
+                        ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+
+                else:
+                    input("\n You have no avaiable unit in your team.\n Please press Enter. ")
+
+                main_UI()
+
+                enemy_UI()
+                if len(available_ally) > 0:
+                    if len(available_ally) == 1:
+                        unit_select = input("\n Choose the avaiable unit in your team ({num}): " .format(num = len(available_enemy)))
+                        while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) != len(available_enemy):
+                            enemy_UI()
+                            print("\n YOU ENTERED WRONG VALUE")
+                            unit_select = input("\n Choose the avaiable unit in your team ({num}): " .format(num = len(available_enemy)))
+
+                        ally_UI()
+                        opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))
+                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_ally):
+                            ally_UI()
+                            print("\n YOU ENTERED WRONG VALUE")
+                            opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))
+
+                        enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
+                    else:
+                        unit_select = input("\n Choose the avaiable unit in your team (1~{num}): " .format(num = len(available_ally)))
+                        while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally):
+                            ally_UI()
+                            print("\n YOU ENTERED WRONG VALUE")
+                            unit_select = input("\n Choose the avaiable unit in your team (1~{num}): " .format(num = len(available_ally)))
+
+                        ally_UI()
+                        opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_enemy)))
+                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_ally):
+                            ally_UI()
+                            print("\n YOU ENTERED WRONG VALUE")
+                            opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_ally)))
+                            
+                        enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
+
+                else:
+                    input("\n You have no avaiable unit in your team.\n Please press Enter. ")
+                
+                a = input("quit? ")
+                if a == 'quit':
+                    GAME = False
+                turn += 1
 
 # Start the game
 main()
-
+print(available_ally)
 # ┳ ┣ ┫ ┻ ╋
