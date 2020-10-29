@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from random import randrange
 excel_file = pd.read_excel('CStat.xlsx')
-      
+
 # Characters Stats==============================
 class Unit:
     def __init__(self):
