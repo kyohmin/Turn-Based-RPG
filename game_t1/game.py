@@ -1,12 +1,11 @@
 import os
+import pandas as pd
+from random import randint
+excel_file = pd.read_excel('./game_t1/CStat.xlsx')
 
-from random import randrange
-
-      
-# Characters Stats============================== 
-import random
+# Characters Stats==============================
 class Unit:
-    def __(init__self):
+    def __init__(self):
         self.RANK = 0
         self.EXP = 100
         self.FIGHTABLE = True
@@ -19,51 +18,27 @@ class Unit:
         self.TEAM = TEAM
 
     def show_stats(self):
-        return self.NAME, self.RACE, self.HP, self.ATK, self.DEF, self.FROZEN, self.POISONED, self.EXP, self.RANK, self.ALIVE      #무슨 뜻인지 이해가 안감. Return?
+        return self.NAME, self.RACE, self.HP, self.ATK, self.DEF, self.FROZEN, self.POISONED, self.EXP, self.RANK, self.ALIVE
     
     def attack(self, TARGET):
-        
-        if TARGET.ALIVE == True:    #내가 죽은지를 인지를 못하는것? 미리 인지를 할 수는 없나
-            if self.ALIVE == False:
-                 print("You are already dead")    
-            elif TARGET.DEF > self.ATK:      #게임의 성사 여부를 판단하는 단계
-                pass                         #pass 없애고 공격불가 넣기?
-            else:                                    #게임 연산 처리
-                TARGET.damage = self.ATK - TARGET.DEF + (random.sample(0,6),1)  #타켓의 데미지는 타겟의 공격력에서 타겟의 방어력을 빼고 보너스 랜덤 점수를 더한다.
-                self.HP -= TARGET.DEF
-                                                                #TARGET.HP = TARGET.HP + TARGET.DEF - self.ATK      #타겟의 체력는 타겟 체력 더하기 타겟의 방어력 빼기 내 공격력
-                TARGET.HP -= TARGET.damage
-                self.EXP += TARGET.damage                                    #상대방에게 준 피해 만큼 경험치 더함
-                TARGET.EXP += TARGET.DEF
-                    
-                # EXP system
-                self.EXP += self.ATK                              #왜 써져있는건지?
-                TARGET.EXP += TARGET.DEF
-                if self.EXP == 40:
-                    self.rank_up()                 
-                if TARGET.EXP == 40:
-                    TARGET.rank_up()               #타겟도 레벨업 해야할텐데
+        if TARGET.DEF > self.ATK:
+            pass
+
         else:
-            print("You are not able to attack the dead person")
+            TARGET.HP = TARGET.HP + TARGET.DEF - self.ATK
+
+            # EXP system
+            self.EXP += self.ATK
+            TARGET.EXP += TARGET.DEF
+
+            self.rank_up()
+            TARGET.rank_up()
+                
 
 
     
-    def special_power_system(self,TARGET):
-        if TARGET == self.team:                     #TARGET.team이라고 써야하는지?
-            if self.spell == "Heal": 
-                TARGET.HP += 5                     #레벨업하면 더해야하는 숫자가 달라져야 하는데 어떻게 되는건지?
-            else:
-                TARGET != TARGET.poison
-        else:
-            if self.spell == "Poison":
-                if TARGET != TARGET.CURE:
-                    TARGET.EXP -= 3
-                    
-            else:
-                TARGET.EXP = 3    #바꿔야함
-        
-        self.EXP += 5
-
+    def special_power_system(self):
+        pass
 
     def rank_up(self):
         if self.EXP >= 100:
@@ -201,18 +176,18 @@ def setting_RN():
         print("┃                                                                ┃")
         print("┃       1. [OGRE]                                                ┃")
         print("┃          Have Strong Power, but have 50% to miss               ┃")
-        print("┃               HP = {0} / ATK = {1} / DEF = {2}                 ┃" .format(excel_file['HP'][0], excel_file['ATK'][0], excel_file['DEF'][0]))
+        print("┃               HP = {0} / ATK = {1} / DEF = {2}                   ┃" .format(excel_file['HP'][0], excel_file['ATK'][0], excel_file['DEF'][0]))
         print("┃               [One Hidden Skill in Rank 3]                     ┃")
         print("┃                                                                ┃")
         print("┃       2. [KNIGHT]                                              ┃")
         print("┃          Have Decent Power and Strong Defence                  ┃")
-        print("┃               HP = {0} / ATK = {1} / DEF = {2}                 ┃" .format(excel_file['HP'][3], excel_file['ATK'][3], excel_file['DEF'][3]))
+        print("┃               HP = {0} / ATK = {1} / DEF = {2}                   ┃" .format(excel_file['HP'][3], excel_file['ATK'][3], excel_file['DEF'][3]))
         print("┃               [One Hidden Skill in Rank 3]                     ┃")
         print("┃                                                                ┃")
         print("┃       3. [SORCERER]                                            ┃")
         print("┃          Have Weak Power and Defence, but can cast magic       ┃")
         print("┃               Magic Skills : {0}, {1}, and {2}          ┃" .format(excel_file['SP 1'][6], excel_file['SP 2'][6], excel_file['SP 3'][6]))
-        print("┃               HP = {0} / ATK = {1} / DEF = {2}                 ┃" .format(excel_file['HP'][6], excel_file['ATK'][6], excel_file['DEF'][6]))
+        print("┃               HP = {0} / ATK = {1} / DEF = {2}                    ┃" .format(excel_file['HP'][6], excel_file['ATK'][6], excel_file['DEF'][6]))
         print("┃               [One Hidden Skill in Rank 3]                     ┃")
         print("┃                                                                ┃")
         print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
@@ -530,150 +505,79 @@ def main():
                 
                 # Game play
                 ally_UI()
-                if len(available_ally) > 0 and len(available.enemy) > 0 :
+                if len(available_ally) > 0:
                     if len(available_ally) == 1:
-                        unit_select = input("\n Choose the available unit in your team ({num}): " .format(num = len(available_ally)))
+                        unit_select = input("\n Choose the avaiable unit in your team ({num}): " .format(num = len(available_ally)))
                         while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) != len(available_ally):
                             ally_UI()
                             print("\n YOU ENTERED WRONG VALUE")
-                            unit_select = input("\n Choose the available unit in your team ({num}): " .format(num = len(available_ally)))
+                            unit_select = input("\n Choose the avaiable unit in your team ({num}): " .format(num = len(available_ally)))
+
                         enemy_UI()
-                        if len(available_enemy) == 1:
-                            opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_enemy)))          #어디다가 함수 넣을지
-                            if unit_select == Sorcerer:   #ally_object[0] == Sorcerer:
-                                self.special_power_system()     #
-                            else:
-                                self.attack(self, TARGET)
+                        opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))
                         while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_enemy):
                             enemy_UI()
                             print("\n YOU ENTERED WRONG VALUE")
                             opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_enemy)))
-                        else:
-                            opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_enemy)))
-                            if unit_select == Sorcerer:
-                                def special_power_system(self)
-                            else:
-                                def attack(self, TARGET)
+
+                        ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+                    else:
+                        unit_select = input("\n Choose the avaiable unit in your team (1~{num}): " .format(num = len(available_ally)))
+                        while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally):
+                            ally_UI()
+                            print("\n YOU ENTERED WRONG VALUE")
+                            unit_select = input("\n Choose the avaiable unit in your team (1~{num}): " .format(num = len(available_ally)))
+
+                        enemy_UI()
+                        opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_enemy)))
                         while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_enemy):
                             enemy_UI()
                             print("\n YOU ENTERED WRONG VALUE")
                             opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_ally)))
 
                         ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
-                    else:
-                        unit_select = input("\n Choose the available unit in your team (1~{num}): " .format(num = len(available_ally)))
-                        while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally):
-                            ally_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            unit_select = input("\n Choose the available unit in your team (1~{num}): " .format(num = len(available_ally)))
-                        enemy_UI()
-                        if len(available_enemy) == 1:
-                            opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_enemy)))          #어디다가 함수 넣을지
-                            if unit_select = Sorcerer:
-                                def special_power_system(self)
-                            else:
-                                def attack(self, TARGET)
-                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_enemy):
-                            enemy_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_enemy)))
-                        else:
-                            opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_enemy)))
-                            if unit_select = Sorcerer:
-                                def special_power_system(self)
-                            else:
-                                def attack(self, TARGET)
-                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_enemy):
-                            enemy_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_ally)))
-
-                        ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])           #위치 알아내야함
 
                 else:
-                    if len(available_ally) = 0 and len(availalbe.enemy) = 0: 
-                        print("\n You have no available unit in your team or every enemy unit is dead.\n Please press Enter. ")
-                        print("Game over")         #둘다 다 죽는게 가능하지 않을려나?
-                    elif len(avaliable_ally) = 0:
-                        print("Game over and your enemy won the game.\n Please press Enter. ")
-                    else:
-                        print("Game over and your team won the game.\n Please press Enter. ")
-
-                a = input("quit? ")
-                if a == 'quit':
-                    GAME = False
-                turn += 1
+                    input("\n You have no avaiable unit in your team.\n Please press Enter. ")
 
                 main_UI()
 
                 enemy_UI()
-                if len(available_enemy) > 0 and len(available.ally) > 0
-                    if len(available_enemy) == 1:
-                        unit_select = input("\n Choose the available unit in your team ({num}): " .format(num = len(available_enemy)))
+                if len(available_ally) > 0:
+                    if len(available_ally) == 1:
+                        unit_select = input("\n Choose the avaiable unit in your team ({num}): " .format(num = len(available_enemy)))
                         while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) != len(available_enemy):
                             enemy_UI()
                             print("\n YOU ENTERED WRONG VALUE")
-                            unit_select = input("\n Choose the available unit in your team ({num}): " .format(num = len(available_enemy)))
+                            unit_select = input("\n Choose the avaiable unit in your team ({num}): " .format(num = len(available_enemy)))
+
                         ally_UI()
-                        if len(available_ally) == 1:
-                            opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))
-                            if unit_select = Sorcerer:
-                                def special_power_system(self)
-                            else:
-                                def attack(self, TARGET)
+                        opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))
                         while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_ally):
                             ally_UI()
                             print("\n YOU ENTERED WRONG VALUE")
-                            opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))                                                                                                   #enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
-                        else:
-                            opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_ally)))
-                            if unit_select == Sorcerer:
-                                def special_power_system(self)
-                            else:
-                                def attack(self, TARGET)
-                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_ally):
-                            ally_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_ally)))
-                        enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])  #ally_UI()
+                            opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))
+
+                        enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
                     else:
-                        unit_select = input("\n Choose the available unit in your team (1~{num}): " .format(num = len(available_enemy)))
-                        while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) != len(available_enemy):
-                            enemy_UI()
+                        unit_select = input("\n Choose the avaiable unit in your team (1~{num}): " .format(num = len(available_ally)))
+                        while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally):
+                            ally_UI()
                             print("\n YOU ENTERED WRONG VALUE")
-                            unit_select = input("\n Choose the available unit in your team ({num}): " .format(num = len(available_enemy)))
+                            unit_select = input("\n Choose the avaiable unit in your team (1~{num}): " .format(num = len(available_ally)))
+
                         ally_UI()
-                        if len(available_ally) == 1:
-                            opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))
-                            if unit_select = Sorcerer:
-                                def special_power_system(self)
-                            else:
-                                def attack(self, TARGET)
-                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_ally):
-                            ally_UI()  #
-                            print("\n YOU ENTERED WRONG VALUE")
-                            opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))
-                        else:
-                            opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))
-                            if unit_select = Sorcerer:
-                                def special_power_system(self)
-                            else:
-                                def attack(self, TARGET)
+                        opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_enemy)))
                         while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_ally):
                             ally_UI()
                             print("\n YOU ENTERED WRONG VALUE")
-                            opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))
+                            opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_ally)))
                             
                         enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
 
                 else:
-                    if len(available_ally) = 0 and len(availalbe.enemy) = 0:
-                        print("\n You have no available unit in your team or every enemy unit is dead.\n Please press Enter. ")
-                    elif len(avaliable_ally) = 0:
-                        print("Game over and your enemy won the game.\n Please press Enter. ")
-                    else:
-                        print("Game over and your team won the game.\n Please press Enter. ")
-
+                    input("\n You have no avaiable unit in your team.\n Please press Enter. ")
+                
                 a = input("quit? ")
                 if a == 'quit':
                     GAME = False
@@ -681,4 +585,4 @@ def main():
 
 # Start the game
 main()
-print(available_ally)
+# ┳ ┣ ┫ ┻ ╋
