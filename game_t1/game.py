@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from random import randint
-excel_file = pd.read_excel('CStat.xlsx')
+excel_file = pd.read_excel('./game_t1/CStat.xlsx', 'Character_Stats')
 
 # Characters Stats==============================
 class Unit:
@@ -253,7 +253,7 @@ def setting_RN():
         # Check Input
         name = input("\nPlease Write the NAME : ")
         name = name.strip()
-        while name == '':
+        while name == '' or len(name) > 21:
             clean_screen()
             print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
             print("┃           You Entered Wrong Value          ┃")
@@ -344,7 +344,7 @@ def setting_RN():
         # Check Input
         name = input("\nPlease Write the NAME : ")
         name = name.strip()
-        while name == '':
+        while name == '' or len(name) > 21:
             clean_screen()
             print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
             print("┃           You Entered Wrong Value          ┃")
