@@ -1,10 +1,13 @@
 import os
 import pandas as pd
 from random import randint
-excel_file = pd.read_excel('./game_t1/CStat.xlsx', 'Character_Stats')
+excel_file = pd.read_excel('CStat.xlsx')
 
 # Characters Stats==============================
 class Unit:
+    ally_counter = 0
+    enemy_counter = 0
+
     def __init__(self):
         self.RANK = 0
         self.EXP = 100
@@ -34,6 +37,11 @@ class Unit:
             self.rank_up()
             TARGET.rank_up()
 
+        if TARGET.HP <= 0:
+            if TARGET.TEAM == "ALLY":
+                Unit.ally_counter -= 1
+            else:
+                Unit.enemy_counter -= 1
     
     def special_power_system(self):
         pass
@@ -163,6 +171,9 @@ def setting_size():
         print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
         num_players = input("\nPlease Enter the Number (1~5) : ")
     num_players = int(num_players)
+    for _ in range(num_players):
+        Unit.ally_counter += 1
+        Unit.enemy_counter += 1
 
 # Setting Race & Name
 def setting_RN():
@@ -402,7 +413,6 @@ def big_seg_UI(num):
             print("┃   {name} : DEAD" .format(name = unit_stat[0]) + " " * (54 - len(unit_stat[0])) + "┃                             ┃                            ┃")
             print("┃                                                                ┃                             ┃                            ┃")
 
-
 # MAIN UI
 def main_UI():
     global unit_stat
@@ -479,6 +489,65 @@ def list_objects():
         ally_object.append('ally')
         enemy_object.append('enemy')
 
+def game_logic():
+    global turn
+    global GAME
+
+    turn = 0
+    GAME = True
+    while GAME:
+        main_UI()
+        ally_UI()
+        
+        # Ally's turn - Ally select who attacks who
+        if len(available_ally) > 0:
+            unit_select = input("\n Choose the avaiable unit in your team (#) : ")
+            while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally) or ally_object[int(unit_select) - 1].show_stats()[9] == False:
+                ally_UI()
+                print("\n YOU ENTERED WRONG VALUE")
+                unit_select = input("\n Choose the avaiable unit in your team (#) : ")
+
+            enemy_UI()
+            opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+            while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
+                enemy_UI()
+                print("\n YOU ENTERED WRONG VALUE")
+                opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+
+            ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+
+            if Unit.ally_counter == 0 or Unit.enemy_counter == 0:
+                main_UI()
+                break
+
+            main_UI()
+            enemy_UI()
+
+            # Enemy's turn - Enemy select who attacks who
+            unit_select = input("\n Choose the avaiable unit in your team (#) : ")
+            while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally) or enemy_object[int(unit_select) - 1].show_stats()[9] == False:
+                enemy_UI()
+                print("\n YOU ENTERED WRONG VALUE")
+                unit_select = input("\n Choose the avaiable unit in your team (#) : ")
+
+            ally_UI()
+            opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+            while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
+                ally_UI()
+                print("\n YOU ENTERED WRONG VALUE")
+                opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+
+            enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
+
+            if Unit.ally_counter == 0 or Unit.enemy_counter == 0:
+                main_UI()
+                break
+        else:
+            input("\n You have no avaiable unit in your team.\n Please press Enter. ")
+
+        turn += 1
+
+
 # Cleaning Screen
 def clean_screen():
    if os.name == 'posix':
@@ -498,88 +567,8 @@ def main():
             setting_size()
             list_objects()
             setting_RN()
-            while GAME:
-                main_UI()
-                
-                # Game play
-                ally_UI()
-                if len(available_ally) > 0:
-                    if len(available_ally) == 1:
-                        unit_select = input("\n Choose the avaiable unit in your team ({num}): " .format(num = len(available_ally)))
-                        while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) != len(available_ally):
-                            ally_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            unit_select = input("\n Choose the avaiable unit in your team ({num}): " .format(num = len(available_ally)))
-
-                        enemy_UI()
-                        opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))
-                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_enemy):
-                            enemy_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_enemy)))
-
-                        ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
-                    else:
-                        unit_select = input("\n Choose the avaiable unit in your team (1~{num}): " .format(num = len(available_ally)))
-                        while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally):
-                            ally_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            unit_select = input("\n Choose the avaiable unit in your team (1~{num}): " .format(num = len(available_ally)))
-
-                        enemy_UI()
-                        opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_enemy)))
-                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_enemy):
-                            enemy_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_ally)))
-
-                        ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
-
-                else:
-                    input("\n You have no avaiable unit in your team.\n Please press Enter. ")
-
-                main_UI()
-
-                enemy_UI()
-                if len(available_ally) > 0:
-                    if len(available_ally) == 1:
-                        unit_select = input("\n Choose the avaiable unit in your team ({num}): " .format(num = len(available_enemy)))
-                        while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) != len(available_enemy):
-                            enemy_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            unit_select = input("\n Choose the avaiable unit in your team ({num}): " .format(num = len(available_enemy)))
-
-                        ally_UI()
-                        opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))
-                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_ally):
-                            ally_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            opponent_select = input("\n Choose the enemy that you want to attack ({num}): " .format(num = len(available_ally)))
-
-                        enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
-                    else:
-                        unit_select = input("\n Choose the avaiable unit in your team (1~{num}): " .format(num = len(available_ally)))
-                        while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally):
-                            ally_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            unit_select = input("\n Choose the avaiable unit in your team (1~{num}): " .format(num = len(available_ally)))
-
-                        ally_UI()
-                        opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_enemy)))
-                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) != len(available_ally):
-                            ally_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            opponent_select = input("\n Choose the enemy that you want to attack (1~{num}): " .format(num = len(available_ally)))
-                            
-                        enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
-
-                else:
-                    input("\n You have no avaiable unit in your team.\n Please press Enter. ")
-                
-                a = input("quit? ")
-                if a == 'quit':
-                    GAME = False
-                turn += 1
+            game_logic()
+            
 
 # Start the game
 main()
