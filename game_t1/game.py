@@ -33,7 +33,7 @@ class Unit:
             # EXP system
             self.EXP += self.ATK
             TARGET.EXP += TARGET.DEF
-
+            #TARGET
             self.rank_up()
             TARGET.rank_up()
 
