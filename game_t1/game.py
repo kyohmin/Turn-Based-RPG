@@ -253,7 +253,7 @@ def setting_RN():
         # Check Input
         name = input("\nPlease Write the NAME : ")
         name = name.strip()
-        while name == '' or len(name) > 21:
+        while name == '' or len(name) > 20:
             clean_screen()
             print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
             print("┃           You Entered Wrong Value          ┃")
@@ -514,7 +514,23 @@ def game_logic():
                 print("\n YOU ENTERED WRONG VALUE")
                 opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
 
-            ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+            if ally_object[int(unit_select) - 1].show_stats()[1] == "Sorcerer":
+                ally_UI()
+                move_select = input("\n Choose your move (1~4) : ")
+                while not move_select.isdigit() or int(move_select) < 0 or int(move_select) > 4:
+                    ally_UI()
+                    print("\n YOU ENTERED WRONG VALUE")
+                    move_select = input("\n Choose your move (1~4) : ")
+                if move_select == 1:
+                    ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+                elif move_select == 2:
+                    ally_object[int(unit_select) - 1].cure(enemy_object[int(opponent_select)-1])
+                elif move_select == 3:
+                    ally_object[int(unit_select) - 1].freeze(enemy_object[int(opponent_select)-1])
+                elif move_select == 4:
+                    ally_object[int(unit_select) - 1].poison(enemy_object[int(opponent_select)-1])
+            else:       
+                ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
 
             if Unit.ally_counter == 0 or Unit.enemy_counter == 0:
                 main_UI()
@@ -537,7 +553,23 @@ def game_logic():
                 print("\n YOU ENTERED WRONG VALUE")
                 opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
 
-            enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
+            if enemy_object[int(unit_select) - 1].show_stats()[1] == "Sorcerer":
+                enemy_UI()
+                move_select = input("\n Choose your move (1~4) : ")
+                while not move_select.isdigit() or int(move_select) < 0 or int(move_select) > 4:
+                    ally_UI()
+                    print("\n YOU ENTERED WRONG VALUE")
+                    move_select = input("\n Choose your move (1~4) : ")
+                if move_select == 1:
+                    enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
+                elif move_select == 2:
+                    enemy_object[int(unit_select) - 1].cure(ally_object[int(opponent_select)-1])
+                elif move_select == 3:
+                    enemy_object[int(unit_select) - 1].freeze(ally_object[int(opponent_select)-1])
+                elif move_select == 4:
+                    enemy_object[int(unit_select) - 1].poison(ally_object[int(opponent_select)-1])
+            else:       
+                ally_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
 
             if Unit.ally_counter == 0 or Unit.enemy_counter == 0:
                 main_UI()
