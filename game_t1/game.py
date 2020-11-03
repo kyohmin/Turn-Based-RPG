@@ -36,11 +36,11 @@ class Unit:
             TARGET.EXP += TARGET.DEF
             
             if total_damage >= 10:
-                self.EXP = self.EXP * 1.2
+                self.EXP = int(self.EXP * 1.2)
 
             if TARGET.HP == 0:
                 TARGET.ALIVE = False
-                self.EXP = self.EXP * 1.5
+                self.EXP = int(self.EXP * 1.5)
 
             self.rank_up()
             TARGET.rank_up()
@@ -51,12 +51,15 @@ class Unit:
             else:
                 Unit.enemy_counter -= 1
     
-    def cure(self,TARGET):                            #will be changed into 'heal'
+    def heal(self,TARGET):                            #will be changed into 'heal'
         if TARGET.TEAM == self.TEAM:
             TARGET.EXP += 5
             self.EXP += 5
         else:
-            print("You are not able to spell 'HEAL' to target team member")       
+            print("You are not able to spell 'HEAL' to target team member")
+        
+        self.rank_up()
+        TARGET.rank_up()
 
     def cure(self,TARGET):                              
         if TARGET.TEAM == self.TEAM:
@@ -68,28 +71,37 @@ class Unit:
         else:
              print("You are not able to spell 'CURE' to target team member") 
 
+        self.rank_up()
+        TARGET.rank_up()
+
     def poison(self,TARGET):
         if TARGET.TEAM != self.TEAM:
             if TARGET.POISONED == False:
-                TARGET.POISONED == True
+                TARGET.POISONED = True
                 TARGET.HP -= 3                             #다음 차례도 계속 깎여야함 - 코드 의문
-                self.EXP += 5      
+                self.EXP += 5
+
             else:
                 print("Your target is already poisoned")                       
         else:
             print("You are not able to spell 'POISON' to your team member")          #logic should be changed
 
+        self.rank_up()
+        TARGET.rank_up()
+
     def freeze(self,TARGET):
         if TARGET.TEAM != self.TEAM:
             if TARGET.FROZEN == False:
                 TARGET.FROZEN = True
-                print(name + "is frozen", TARGET.name)            #검토필요
                 while turn == turn + 1:
                     TARGET.FROZEN = False                        #need a code - automatically un-freeze, while or if of ? (검토필요)
             else:
                 print("Your target is already frozen")       
         else:
             print("You are not able to spell 'FREEZE' to your team member")
+
+        self.rank_up()
+        TARGET.rank_up()
 
 
     #def special_power_system(self,TARGET):
@@ -420,7 +432,7 @@ def seg_UI(num):
             print("┃        EXP : {0}       RANK : {1}       RACE : {2}" . format(unit_stat[7], unit_stat[8], unit_stat[1]) + " "*(21 - (len(str(unit_stat[7])) + len(str(unit_stat[1])))) + "┃                             ┃                            ┃")
             print("┃                                                                ┃                             ┃                            ┃")
         else:
-            print("┃        HP : {0}        ATK : {1}        DEF : {2}" .format(unit_stat[2], unit_stat[3], unit_stat[4]) + " "*(23 - (len(str(unit_stat[2])) + len(str(unit_stat[3])) + len(str(unit_stat[4])))) + "┃                             ┃   2. CURE                  ┃")
+            print("┃        HP : {0}        ATK : {1}        DEF : {2}" .format(unit_stat[2], unit_stat[3], unit_stat[4]) + " "*(23 - (len(str(unit_stat[2])) + len(str(unit_stat[3])) + len(str(unit_stat[4])))) + "┃                             ┃   2. HEAL                  ┃")
             print("┃        EXP : {0}       RANK : {1}       RACE : {2}" . format(unit_stat[7], unit_stat[8], unit_stat[1]) + " "*(21 - (len(str(unit_stat[7])) + len(str(unit_stat[1])))) + "┃                             ┃   3. FREEZE                ┃")
             print("┃                                                                ┃                             ┃   4. POISON                ┃")
             print("┃                                                                ┃                             ┃                            ┃")
@@ -572,23 +584,15 @@ def game_logic():
                     ally_UI()
                     print("\n YOU ENTERED WRONG VALUE")
                     move_select = input("\n Choose your move (1~4) : ")
-                if move_select == 1:
-                    ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])           
-                    attack()
                     
-                elif move_select == 2:
-                    ally_object[int(unit_select) - 1].cure(enemy_object[int(opponent_select)-1])               
-                    cure()                                                                                                                              #will be changed into heal
-                    #if enemy_object.HEAL == True:
-                        #print(name + "is healed", TARGET.NAME)                    #attempted to see whether it works or not     - not worked                                                                             
-                elif move_select == 3:
+                if int(move_select) == 1:
+                    ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])           
+                elif int(move_select) == 2:
+                    ally_object[int(unit_select) - 1].heal(enemy_object[int(opponent_select)-1])                                                                                          
+                elif int(move_select) == 3:
                     ally_object[int(unit_select) - 1].freeze(enemy_object[int(opponent_select)-1])
-                    freeze()
-                    #if enemy_object.FROZEN == True:
-                        #print(name + "is frozen")                                  #attempted to see whether it works or not   - not worked    
-                elif move_select == 4:
+                elif int(move_select) == 4:
                     ally_object[int(unit_select) - 1].poison(enemy_object[int(opponent_select)-1])
-                    poison()
             else:       
                 ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
 
@@ -620,13 +624,13 @@ def game_logic():
                     ally_UI()
                     print("\n YOU ENTERED WRONG VALUE")
                     move_select = input("\n Choose your move (1~4) : ")
-                if move_select == 1:
+                if int(move_select) == 1:
                     enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
-                elif move_select == 2:
-                    enemy_object[int(unit_select) - 1].cure(ally_object[int(opponent_select)-1])
-                elif move_select == 3:
+                elif int(move_select) == 2:
+                    enemy_object[int(unit_select) - 1].heal(ally_object[int(opponent_select)-1])
+                elif int(move_select) == 3:
                     enemy_object[int(unit_select) - 1].freeze(ally_object[int(opponent_select)-1])
-                elif move_select == 4:
+                elif int(move_select) == 4:
                     enemy_object[int(unit_select) - 1].poison(ally_object[int(opponent_select)-1])
             else:       
                 ally_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
@@ -650,7 +654,6 @@ def clean_screen():
 # GAME LOGIC ===========================================================
 def main():
     global turn
-    GAME = True
     turn = 1
     main_menu()
     if menu_input == 1:
