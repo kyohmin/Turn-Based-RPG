@@ -104,10 +104,6 @@ class Unit:
         TARGET.rank_up()
 
 
-    #def special_power_system(self,TARGET):
-        #if self.TEAM == TARGET.TEAM:
-            #pass
-
     def rank_up(self):
         if self.EXP >= 100:
             if self.ID < self.MAX_ID:
