@@ -239,6 +239,7 @@ def setting_size():
 
 # Setting Race & Name
 def setting_RN():
+    names_list = []
     for num in range(num_players):
         # For ALLY ===================================================================
         clean_screen()
@@ -315,7 +316,7 @@ def setting_RN():
         # Check Input
         name = input("\nPlease Write the NAME : ")
         name = name.strip()
-        while name == '' or len(name) > 20:
+        while name == '' or len(name) > 20 or name in names_list:
             clean_screen()
             print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
             print("┃           You Entered Wrong Value          ┃")
@@ -327,6 +328,7 @@ def setting_RN():
             print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
             name = input("\nPlease Write the NAME : ")
             name = name.strip()
+        names_list.append(name)
 
         ally_object[num].set_NT(name, "ALLY")
 
@@ -406,7 +408,7 @@ def setting_RN():
         # Check Input
         name = input("\nPlease Write the NAME : ")
         name = name.strip()
-        while name == '' or len(name) > 21:
+        while name == '' or len(name) > 20 or name in names_list:
             clean_screen()
             print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
             print("┃           You Entered Wrong Value          ┃")
@@ -418,6 +420,7 @@ def setting_RN():
             print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
             name = input("\nPlease Write the NAME : ")
             name = name.strip()
+        names_list.append(name)
 
         enemy_object[num].set_NT(name, "ENEMY")
 
