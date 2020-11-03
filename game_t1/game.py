@@ -26,14 +26,22 @@ class Unit:
     def attack(self, TARGET):
         if TARGET.DEF > self.ATK:
             pass
-
         else:
-            TARGET.HP = TARGET.HP + TARGET.DEF - self.ATK
+            total_damage = self.ATK - TARGET.DEF + randint(0,6)
+            self.HP -= TARGET.DEF    
+            TARGET.HP -= total_damage
 
             # EXP system
-            self.EXP += self.ATK
+            self.EXP += total_damage
             TARGET.EXP += TARGET.DEF
-            #TARGET
+            
+            if total_damage >= 10:
+                self.EXP = self.EXP * 1.2
+
+            if TARGET.HP == 0:
+                TARGET.ALIVE = False
+                self.EXP = self.EXP * 1.5
+
             self.rank_up()
             TARGET.rank_up()
 
@@ -43,8 +51,50 @@ class Unit:
             else:
                 Unit.enemy_counter -= 1
     
-    def special_power_system(self):
-        pass
+    def cure(self,TARGET):                            #will be changed into 'heal'
+        if TARGET.TEAM == self.TEAM:
+            TARGET.EXP += 5
+            self.EXP += 5
+        else:
+            print("You are not able to spell 'HEAL' to target team member")       
+
+    def cure(self,TARGET):                              
+        if TARGET.TEAM == self.TEAM:
+            if TARGET.POISONED == True:                #should check whether target is poisoned or not - if문, print문 is needed
+                TARGET.POISONED = False
+                self.EXP += 5
+            else:
+                print("Your target is not poisoned") #logic should be changed 
+        else:
+             print("You are not able to spell 'CURE' to target team member") 
+
+    def poison(self,TARGET):
+        if TARGET.TEAM != self.TEAM:
+            if TARGET.POISONED == False:
+                TARGET.POISONED == True
+                TARGET.HP -= 3                             #다음 차례도 계속 깎여야함 - 코드 의문
+                self.EXP += 5      
+            else:
+                print("Your target is already poisoned")                       
+        else:
+            print("You are not able to spell 'POISON' to your team member")          #logic should be changed
+
+    def freeze(self,TARGET):
+        if TARGET.TEAM != self.TEAM:
+            if TARGET.FROZEN == False:
+                TARGET.FROZEN = True
+                print(name + "is frozen", TARGET.name)            #검토필요
+                while turn == turn + 1:
+                    TARGET.FROZEN = False                        #need a code - automatically un-freeze, while or if of ? (검토필요)
+            else:
+                print("Your target is already frozen")       
+        else:
+            print("You are not able to spell 'FREEZE' to your team member")
+
+
+    #def special_power_system(self,TARGET):
+        #if self.TEAM == TARGET.TEAM:
+            #pass
 
     def rank_up(self):
         if self.EXP >= 100:
@@ -465,7 +515,7 @@ def ally_UI():
         big_seg_UI(num)
     print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 
-def enemy_UI():
+def enemy_UI():                                                    
     global unit_stat
     clean_screen()
     print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
@@ -477,7 +527,8 @@ def enemy_UI():
         unit_stat = enemy_object[num].show_stats()
         big_seg_UI(num)
     print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
-
+    #if TARGET.HEAL == True:
+        #print(name + "is healed", self.NAME)                      #attempted to see whether it works or not    - not worked
 # List for Objects
 def list_objects():
     global ally_object
@@ -501,11 +552,11 @@ def game_logic():
         
         # Ally's turn - Ally select who attacks who
         if len(available_ally) > 0:
-            unit_select = input("\n Choose the avaiable unit in your team (#) : ")
+            unit_select = input("\n Choose the available unit in your team (#) : ")
             while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally) or ally_object[int(unit_select) - 1].show_stats()[9] == False:
                 ally_UI()
                 print("\n YOU ENTERED WRONG VALUE")
-                unit_select = input("\n Choose the avaiable unit in your team (#) : ")
+                unit_select = input("\n Choose the available unit in your team (#) : ")
 
             enemy_UI()
             opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
@@ -522,13 +573,22 @@ def game_logic():
                     print("\n YOU ENTERED WRONG VALUE")
                     move_select = input("\n Choose your move (1~4) : ")
                 if move_select == 1:
-                    ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+                    ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])           
+                    attack()
+                    
                 elif move_select == 2:
-                    ally_object[int(unit_select) - 1].cure(enemy_object[int(opponent_select)-1])
+                    ally_object[int(unit_select) - 1].cure(enemy_object[int(opponent_select)-1])               
+                    cure()                                                                                                                              #will be changed into heal
+                    #if enemy_object.HEAL == True:
+                        #print(name + "is healed", TARGET.NAME)                    #attempted to see whether it works or not     - not worked                                                                             
                 elif move_select == 3:
                     ally_object[int(unit_select) - 1].freeze(enemy_object[int(opponent_select)-1])
+                    freeze()
+                    #if enemy_object.FROZEN == True:
+                        #print(name + "is frozen")                                  #attempted to see whether it works or not   - not worked    
                 elif move_select == 4:
                     ally_object[int(unit_select) - 1].poison(enemy_object[int(opponent_select)-1])
+                    poison()
             else:       
                 ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
 
@@ -540,7 +600,7 @@ def game_logic():
             enemy_UI()
 
             # Enemy's turn - Enemy select who attacks who
-            unit_select = input("\n Choose the avaiable unit in your team (#) : ")
+            unit_select = input("\n Choose the available unit in your team (#) : ")
             while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally) or enemy_object[int(unit_select) - 1].show_stats()[9] == False:
                 enemy_UI()
                 print("\n YOU ENTERED WRONG VALUE")
@@ -575,7 +635,7 @@ def game_logic():
                 main_UI()
                 break
         else:
-            input("\n You have no avaiable unit in your team.\n Please press Enter. ")
+            input("\n You have no available unit in your team.\n Please press Enter. ")
 
         turn += 1
 
