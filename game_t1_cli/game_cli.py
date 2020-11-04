@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from random import randint
-excel_file = pd.read_excel('./game_t1/CStat.xlsx', 'Character_Stats')
+excel_file = pd.read_excel('./game_t1_cli/CStat.xlsx', 'Character_Stats')
 
 # Characters Stats==============================
 class Unit:
