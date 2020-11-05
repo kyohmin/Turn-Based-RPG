@@ -102,8 +102,16 @@ class Unit:
 
         self.rank_up()
         TARGET.rank_up()
-
-
+        
+        def accuracy(self, percentage):
+        probability = percentage * 0.01
+        random = random.random()
+        if probability >= random:
+             def.attack                  # if 및 else 검토 필요
+        else:
+            print("Miss")
+            pass
+    
     def rank_up(self):
         if self.EXP >= 100:
             if self.ID < self.MAX_ID:
