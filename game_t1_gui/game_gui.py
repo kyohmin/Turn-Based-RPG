@@ -1,6 +1,7 @@
 import pygame, sys
 from pygame.locals import *
-from functions import *
+from tf_functions import *
+from functions import resource_path
 import concurrent.futures
 
 # Settings ====================================================
@@ -12,13 +13,13 @@ screen = pygame.display.set_mode((900,600))
 def main_menu_page():
     # Background Image
     box_size = (358,52)
-    bg = pygame.image.load('./Game_Assets/Intro_Page/Intro_Page.jpg')
+    bg = pygame.image.load(resource_path('./Game_Assets/Intro_Page/Intro_Page.jpg'))
     bg = pygame.transform.scale(bg,(900,600))
-    start_btn = pygame.image.load('./Game_Assets/Intro_Page/Start_Button.png')
+    start_btn = pygame.image.load(resource_path('./Game_Assets/Intro_Page/Start_Button.png'))
     start_btn = pygame.transform.scale(start_btn,box_size)
-    saved_btn = pygame.image.load('./Game_Assets/Intro_Page/Saved_Files.png')
+    saved_btn = pygame.image.load(resource_path('./Game_Assets/Intro_Page/Saved_Files.png'))
     saved_btn = pygame.transform.scale(saved_btn,box_size)
-    quit_btn = pygame.image.load('./Game_Assets/Intro_Page/Exit_Button.png')
+    quit_btn = pygame.image.load(resource_path('./Game_Assets/Intro_Page/Exit_Button.png'))
     quit_btn = pygame.transform.scale(quit_btn,box_size)
 
     change_click = False
@@ -74,17 +75,17 @@ def main_menu_page():
                     click = True
 
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(120)
 
 def enemy_selection_page():
     box_size = (400,400)
-    bg = pygame.image.load('./Game_Assets/Backgrounds/menu_background.png')
+    bg = pygame.image.load(resource_path('./Game_Assets/Backgrounds/menu_background.png'))
     bg = pygame.transform.scale(bg,(900,600))
-    logo = pygame.image.load('./Game_Assets/Character_Selection/Enemy_Choice.png')
+    logo = pygame.image.load(resource_path('./Game_Assets/Character_Selection/Enemy_Choice.png'))
     logo = pygame.transform.scale(logo,(543,108))
-    pvp_btn = pygame.image.load('./Game_Assets/Player_vs_AI/Player_vs_Player.png')
+    pvp_btn = pygame.image.load(resource_path('./Game_Assets/Player_vs_AI/Player_vs_Player.png'))
     pvp_btn = pygame.transform.scale(pvp_btn,box_size)
-    pvai_btn = pygame.image.load('./Game_Assets/Player_vs_AI/Player_vs_AI.png')
+    pvai_btn = pygame.image.load(resource_path('./Game_Assets/Player_vs_AI/Player_vs_AI.png'))
     pvai_btn = pygame.transform.scale(pvai_btn,box_size)
 
     change_click = False
@@ -128,10 +129,10 @@ def enemy_selection_page():
                     click = True
 
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(120)
 
 def save_load_page():
-    bg = pygame.image.load('./Game_Assets/Backgrounds/menu_background.png')
+    bg = pygame.image.load(resource_path('./Game_Assets/Backgrounds/menu_background.png'))
     bg = pygame.transform.scale(bg,(900,600))  
     change_click = False  
     click = False
@@ -159,10 +160,10 @@ def save_load_page():
                     click = True
 
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(120)
 
 def setting_page():
-    bg = pygame.image.load('./Game_Assets/Backgrounds/menu_background.png')
+    bg = pygame.image.load(resource_path('./Game_Assets/Backgrounds/menu_background.png'))
     bg = pygame.transform.scale(bg,(900,600))
     change_click = False
     click = False
@@ -188,24 +189,24 @@ def setting_page():
                     click = True
 
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(120)
 
 def team_size():
     box1_size = (252,210)
     box2_size = (329,240)
-    bg = pygame.image.load('./Game_Assets/Backgrounds/menu_background.png')
+    bg = pygame.image.load(resource_path('./Game_Assets/Backgrounds/menu_background.png'))
     bg = pygame.transform.scale(bg,(900,600))
-    logo = pygame.image.load('./Game_Assets/Team_Size/Team_Size.png')
+    logo = pygame.image.load(resource_path('./Game_Assets/Team_Size/Team_Size.png'))
     logo = pygame.transform.scale(logo,(543,108))
-    one_btn = pygame.image.load('./Game_Assets/Team_Size/1v1.png')
+    one_btn = pygame.image.load(resource_path('./Game_Assets/Team_Size/1v1.png'))
     one_btn = pygame.transform.scale(one_btn,box1_size)
-    two_btn = pygame.image.load('./Game_Assets/Team_Size/2v2.png')
+    two_btn = pygame.image.load(resource_path('./Game_Assets/Team_Size/2v2.png'))
     two_btn = pygame.transform.scale(two_btn,box1_size)
-    three_btn = pygame.image.load('./Game_Assets/Team_Size/3v3.png')
+    three_btn = pygame.image.load(resource_path('./Game_Assets/Team_Size/3v3.png'))
     three_btn = pygame.transform.scale(three_btn,box1_size)
-    four_btn = pygame.image.load('./Game_Assets/Team_Size/4v4.png')
+    four_btn = pygame.image.load(resource_path('./Game_Assets/Team_Size/4v4.png'))
     four_btn = pygame.transform.scale(four_btn,box2_size)
-    five_btn = pygame.image.load('./Game_Assets/Team_Size/5v5.png')
+    five_btn = pygame.image.load(resource_path('./Game_Assets/Team_Size/5v5.png'))
     five_btn = pygame.transform.scale(five_btn,box2_size)
 
 
@@ -243,19 +244,19 @@ def team_size():
             
         if dest_one:
             print(1)
-            main_menu_page()
+            character_selection()
         elif dest_two:
             print(2)
-            main_menu_page()
+            character_selection()
         elif dest_three:
             print(3)
-            main_menu_page()
+            character_selection()
         elif dest_four:
             print(4)
-            main_menu_page()
+            character_selection()
         elif dest_five:
             print(5)
-            main_menu_page()
+            character_selection()
 
 
         click = False
@@ -274,7 +275,67 @@ def team_size():
                     click = True
 
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(120)
+
+def character_selection():
+    bg = pygame.image.load(resource_path('./Game_Assets/Character_Selection/Character_Selection.jpg'))
+    bg = pygame.transform.scale(bg,(900,600))
+    change_click = False
+    click = False
+    while True:
+        mx, my = pygame.mouse.get_pos()
+        print(mx, my)
+        screen.blit(bg,(0,0))
+        
+
+        click = False
+        # Event Collections
+        for event in pygame.event.get():
+            # Function to quit game
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    change_click = True
+            if event.type == MOUSEBUTTONUP:
+                change_click = False
+                if event.button == 1:
+                    click = True
+
+        pygame.display.update()
+        clock.tick(120)
+
+def team_setting():
+    bg = pygame.image.load(resource_path('./Game_Assets/Backgrounds/menu_background.png'))
+    bg = pygame.transform.scale(bg,(900,600))
+
+
+
+    change_click = False
+    click = False
+    while True:
+        mx, my = pygame.mouse.get_pos()
+        print(mx, my)
+        screen.blit(bg,(0,0))
+
+        click = False
+        # Event Collections
+        for event in pygame.event.get():
+            # Function to quit game
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    change_click = True
+            if event.type == MOUSEBUTTONUP:
+                change_click = False
+                if event.button == 1:
+                    click = True
+
+        pygame.display.update()
+        clock.tick(120)
 
 def main():
     main_menu_page()
