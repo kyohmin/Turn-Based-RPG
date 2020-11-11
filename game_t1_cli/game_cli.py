@@ -53,8 +53,16 @@ class Unit:
     
     def heal(self,TARGET):                            #will be changed into 'heal'
         if TARGET.TEAM == self.TEAM:
-            TARGET.EXP += 5
-            self.EXP += 5
+            if self.RANK == 1:
+                TARGET.HP += 5
+                self.EXP += 5
+            elif self.RANK == 2:
+                TARGET.HP += 8
+                self.EXP += 5
+            else:
+                TARGET.HP += 10
+                self.EXP += 5
+        
         else:
             print("You are not able to spell 'HEAL' to target team member")
         
