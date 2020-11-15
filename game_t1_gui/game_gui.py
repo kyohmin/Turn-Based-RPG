@@ -24,7 +24,6 @@ def main_menu_page():
 
     change_click = False
     click = False
-    point = 0
     # While Loop
     while True:
         mx, my = pygame.mouse.get_pos()
@@ -33,16 +32,11 @@ def main_menu_page():
         screen.blit(saved_btn,(287,338))
         screen.blit(quit_btn,(287,415))
 
-        if not 289 <= mx <= 289+355 and not 261 <= my <= 261+52: point = 0
-        elif not 289 <= mx <= 289+355 and not 338 <= my <= 338+52: point = 0
-        elif not 289 <= mx <= 289+355 and not 417 <= my <= 417+52: point = 0
-        elif not 805 <= mx <= 805+71 and not 510 <= my <= 510+65: point = 0
-
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            t1 = executor.submit(tf_start,point,start_btn,box_size,mx,my,change_click,click)
-            t2 = executor.submit(tf_save,point,saved_btn,box_size,mx,my,change_click,click)
-            t3 = executor.submit(tf_quit,point,quit_btn,box_size,mx,my,change_click,click)
-            t4 = executor.submit(tf_setting,point,mx,my,click)
+            t1 = executor.submit(tf_start,start_btn,box_size,mx,my,change_click,click)
+            t2 = executor.submit(tf_save,saved_btn,box_size,mx,my,change_click,click)
+            t3 = executor.submit(tf_quit,quit_btn,box_size,mx,my,change_click,click)
+            t4 = executor.submit(tf_setting,mx,my,click)
             start_btn, dest_start = t1.result()
             saved_btn, dest_saved = t2.result()
             quit_btn, dest_quit = t3.result()
@@ -90,7 +84,6 @@ def enemy_selection_page():
 
     change_click = False
     click = False
-    point = 0
     while True:
         mx, my = pygame.mouse.get_pos()
         screen.blit(bg,(0,0))
@@ -98,12 +91,9 @@ def enemy_selection_page():
         screen.blit(pvp_btn,(40,140))
         screen.blit(pvai_btn,(460,140))
 
-        if not 40 <= mx <= 40+400 and not 140 <= my <= 140+400: point = 0
-        elif not 460 <= mx <= 460+400 and not 140 <= my <= 140+400: point = 0
-
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            t1 = executor.submit(tf_pvp,point,pvp_btn,box_size,mx,my,change_click,click)
-            t2 = executor.submit(tf_pvai,point,pvai_btn,box_size,mx,my,change_click,click)
+            t1 = executor.submit(tf_pvp,pvp_btn,box_size,mx,my,change_click,click)
+            t2 = executor.submit(tf_pvai,pvai_btn,box_size,mx,my,change_click,click)
             pvp_btn, dest_pvp = t1.result()
             pvai_btn, dest_pvai = t2.result()
             
@@ -223,18 +213,12 @@ def team_size():
         screen.blit(four_btn,(107,346))
         screen.blit(five_btn,(470,346))
 
-        if not 61 <= mx <= 61+252 and not 130 <= my <= 130+210: point = 0
-        elif not 325 <= mx <= 325+252 and not 130 <= my <= 130+210: point = 0
-        elif not 589 <= mx <= 589+252 and not 130 <= my <= 130+210: point = 0
-        elif not 107 <= mx <= 107+329 and not 346 <= my <= 346+240: point = 0
-        elif not 470 <= mx <= 470+329 and not 346 <= my <= 346+240: point = 0
-
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            t1 = executor.submit(tf_one,point,one_btn,box1_size,mx,my,change_click,click)
-            t2 = executor.submit(tf_two,point,two_btn,box1_size,mx,my,change_click,click)
-            t3 = executor.submit(tf_three,point,three_btn,box1_size,mx,my,change_click,click)
-            t4 = executor.submit(tf_four,point,four_btn,box2_size,mx,my,change_click,click)
-            t5 = executor.submit(tf_five,point,five_btn,box2_size,mx,my,change_click,click)
+            t1 = executor.submit(tf_one,one_btn,box1_size,mx,my,change_click,click)
+            t2 = executor.submit(tf_two,two_btn,box1_size,mx,my,change_click,click)
+            t3 = executor.submit(tf_three,three_btn,box1_size,mx,my,change_click,click)
+            t4 = executor.submit(tf_four,four_btn,box2_size,mx,my,change_click,click)
+            t5 = executor.submit(tf_five,five_btn,box2_size,mx,my,change_click,click)
             
             one_btn, dest_one = t1.result()
             two_btn, dest_two = t2.result()
@@ -278,15 +262,44 @@ def team_size():
         clock.tick(120)
 
 def character_selection():
-    bg = pygame.image.load(resource_path('./Game_Assets/Character_Selection/Character_Selection.jpg'))
+    box1_size = (272,363)
+    box2_size = (264,350)
+    bg = pygame.image.load(resource_path('./Game_Assets/Backgrounds/menu_background_blurred.png'))
     bg = pygame.transform.scale(bg,(900,600))
+    logo = pygame.image.load(resource_path('./Game_Assets/Character_Type/TeamSetting_Header.png'))
+    logo = pygame.transform.scale(logo,(523,88))
+    ogre_btn = pygame.image.load(resource_path('./Game_Assets/Character_Type/Ogre_Setting.png'))
+    ogre_btn = pygame.transform.scale(ogre_btn,box1_size)
+    knight_btn = pygame.image.load(resource_path('./Game_Assets/Character_Type/Knight_Setting.png'))
+    knight_btn = pygame.transform.scale(knight_btn,box2_size)
+    sorcerer_btn = pygame.image.load(resource_path('./Game_Assets/Character_Type/Sorcerer_Setting.png'))
+    sorcerer_btn = pygame.transform.scale(sorcerer_btn,box1_size)
+
     change_click = False
     click = False
     while True:
         mx, my = pygame.mouse.get_pos()
-        print(mx, my)
         screen.blit(bg,(0,0))
-        
+        screen.blit(logo,(209,21))
+        screen.blit(ogre_btn,(18,147))
+        screen.blit(knight_btn,(317,153))
+        screen.blit(sorcerer_btn,(610,147))
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            t1 = executor.submit(tf_ogre_select,ogre_btn,box1_size,mx,my,change_click,click)
+            t2 = executor.submit(tf_knight_select,knight_btn,box2_size,mx,my,change_click,click)
+            t3 = executor.submit(tf_sorcerer_select,sorcerer_btn,box1_size,mx,my,change_click,click)
+            
+            ogre_btn, dest_ogre = t1.result()
+            knight_btn, dest_knight = t2.result()
+            sorcerer_btn, dest_sorcerer = t3.result()
+
+        if dest_ogre:
+            print('ogre')
+        elif dest_knight:
+            print('knight')
+        elif dest_sorcerer:
+            print('sorcerer')
 
         click = False
         # Event Collections
@@ -309,8 +322,6 @@ def character_selection():
 def team_setting():
     bg = pygame.image.load(resource_path('./Game_Assets/Backgrounds/menu_background.png'))
     bg = pygame.transform.scale(bg,(900,600))
-
-
 
     change_click = False
     click = False
