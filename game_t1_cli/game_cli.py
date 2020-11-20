@@ -53,8 +53,16 @@ class Unit:
     
     def heal(self,TARGET):                            #will be changed into 'heal'
         if TARGET.TEAM == self.TEAM:
-            TARGET.EXP += 5
-            self.EXP += 5
+            if self.RANK == 1:
+                TARGET.HP += 5
+                self.EXP += 5
+            elif self.RANK == 2:
+                TARGET.HP += 8
+                self.EXP += 5
+            else:
+                TARGET.HP += 10
+                self.EXP += 5
+        
         else:
             print("You are not able to spell 'HEAL' to target team member")
         
@@ -103,14 +111,14 @@ class Unit:
         self.rank_up()
         TARGET.rank_up()
         
-        def accuracy(self, percentage):
-        probability = percentage * 0.01
-        random = random.random()
-        if probability >= random:
-             def.attack                  # if 및 else 검토 필요
-        else:
-            print("Miss")
-            pass
+        # def accuracy(self, percentage):
+        # probability = percentage * 0.01
+        # random = random.random()
+        # if probability >= random:
+        #      def.attack                  # if 및 else 검토 필요
+        # else:
+        #     print("Miss")
+        #     pass
     
     def rank_up(self):
         if self.EXP >= 100:
