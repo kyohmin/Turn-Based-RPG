@@ -1,10 +1,21 @@
 import os
 import pandas as pd
 from random import randint
+
+
+# For absolute path in any devices ===============================================
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 try:
-    excel_file = pd.read_excel('./game_t1_cli/CStat.xlsx', 'Character_Stats')
+    excel_file = pd.read_excel(resource_path('./game_t1_cli/CStat.xlsx'), 'Character_Stats')
 except:
-    excel_file = pd.read_excel('game_t1_cli/CStat.xlsx', 'Character_Stats')
+    excel_file = pd.read_excel('./game_t1_cli/CStat.xlsx', 'Character_Stats')
 
 # Characters Stats==============================
 class Unit:
