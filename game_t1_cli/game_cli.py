@@ -15,7 +15,7 @@ def resource_path(relative_path):
 try:
     excel_file = pd.read_excel(resource_path('./game_t1_cli/CStat.xlsx'), 'Character_Stats')
 except:
-    excel_file = pd.read_excel('./game_t1_cli/CStat.xlsx', 'Character_Stats')
+    excel_file = pd.read_excel('./CStat.xlsx', 'Character_Stats')
 
 # Characters Stats==============================
 class Unit:
