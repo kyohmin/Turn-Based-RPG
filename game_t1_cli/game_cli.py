@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import time
 from random import randint, random
 
 
@@ -441,6 +442,17 @@ def big_seg_UI(num):
         print("┃   {name} : DEAD" .format(name = unit_stat[0]) + " " * (54 - len(unit_stat[0])) + "┃                             ┃                            ┃")
         print("┃                                                                ┃                             ┃                            ┃")
 
+# SETTING COUNTDOWN TIMER
+def countdown(t): 
+    
+    while t: 
+        mins, secs = divmod(t, 60) 
+        timer = '{:01d}'.format(secs) 
+        print(timer,'...',sep='',end="\r") 
+        time.sleep(1) 
+        t -= 1      
+t = 3  
+
 # MAIN UI
 def main_UI():
     global unit_stat
@@ -590,7 +602,10 @@ def game_logic():
                         sorcererattack_UI()
                         print("\n YOU ENTERED WRONG VALUE")
                         opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                    ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])  
+                    ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+                    print(ally_object[int(unit_select) - 1].show_stats()[0],"attacked",enemy_object[int(unit_select) - 1].show_stats()[0])
+                    countdown(int(t))
+                    
 
                 elif int(move_select) == 2:
                     sorcererheal_UI()
@@ -600,6 +615,8 @@ def game_logic():
                         print("\n YOU ENTERED WRONG VALUE")
                         opponent_select = input("\n Choose the unit that you want to spell (#) : ")
                     ally_object[int(unit_select) - 1].heal(ally_object[int(opponent_select)-1])
+                    print(ally_object[int(unit_select) - 1].show_stats()[0],"healed",ally_object[int(unit_select) - 1].show_stats()[0])
+                    countdown(int(t))
 
             else:
                 enemy_UI()
@@ -608,7 +625,9 @@ def game_logic():
                     enemy_UI()
                     print("\n YOU ENTERED WRONG VALUE")
                     opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1]) 
+                ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+                print(ally_object[int(unit_select) - 1].show_stats()[0],"attacked",enemy_object[int(unit_select) - 1].show_stats()[0])
+                countdown(int(t))
 
             if Unit.ally_counter == 0 or Unit.enemy_counter == 0:
                 main_UI()
@@ -641,6 +660,8 @@ def game_logic():
                             print("\n YOU ENTERED WRONG VALUE")
                             opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
                         enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
+                        print(enemy_object[int(unit_select) - 1].show_stats()[0],"attacked",ally_object[int(unit_select) - 1].show_stats()[0])
+                        countdown(int(t))
 
                     elif int(move_select) == 2:
                         sorcererenemy_UI()
@@ -650,6 +671,8 @@ def game_logic():
                             print("\n YOU ENTERED WRONG VALUE")
                             opponent_select = input("\n Choose the unit that you want to spell (#) : ")
                         enemy_object[int(unit_select) - 1].heal(enemy_object[int(opponent_select)-1])
+                        print(enemy_object[int(unit_select) - 1].show_stats()[0],"healed",enemy_object[int(unit_select) - 1].show_stats()[0])
+                        countdown(int(t))
                     
                 else:
                     ally_UI()
@@ -658,7 +681,10 @@ def game_logic():
                         ally_UI()
                         print("\n YOU ENTERED WRONG VALUE")
                         opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                    enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1]) 
+                    enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
+                    print(enemy_object[int(unit_select) - 1].show_stats()[0],"attacked",ally_object[int(unit_select) - 1].show_stats()[0])
+                    countdown(int(t))
+                    
 
                 if Unit.ally_counter == 0 or Unit.enemy_counter == 0:
                     main_UI()
