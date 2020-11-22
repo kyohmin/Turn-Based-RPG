@@ -38,11 +38,12 @@ class Unit:
         return self.NAME, self.RACE, self.HP, self.ATK, self.DEF, self.FROZEN, self.POISONED, self.EXP, self.RANK, self.ALIVE
     
     def attack(self, TARGET):
-        if TARGET.DEF > self.ATK:
-            pass
-        else:
+        if:
             if self.ACCURACY >= random():
-                total_damage = self.ATK - TARGET.DEF + randint(0,6)
+                if self.ATK < TARGET.DEF:
+                    total_damage = randint(0,6)
+                else:    
+                    total_damage = self.ATK - TARGET.DEF + randint(0,6)
                 self.HP -= TARGET.DEF
                 TARGET.HP -= total_damage
 
