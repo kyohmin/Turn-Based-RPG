@@ -9,6 +9,7 @@ clock = pygame.time.Clock()
 pygame.init()
 pygame.display.set_caption('Turn Based RPG - T1')
 screen = pygame.display.set_mode((900,600))
+base_font = pygame.font.Font(resource_path("./Game_Assets/gumela.ttf"), 32)
 
 def main_menu_page():
     # Background Image
@@ -320,8 +321,47 @@ def character_selection():
         clock.tick(120)
 
 def team_setting():
-    bg = pygame.image.load(resource_path('./Game_Assets/Backgrounds/menu_background.png'))
-    bg = pygame.transform.scale(bg,(900,600))
+    bg = pygame.image.load(resource_path("./Game_Assets/Backgrounds/menu_background.png"))
+    bg = pygame.transform.scale(bg,(900,600))  
+    ogre_set = pygame.image.load(resource_path("./Game_Assets/Character_Name/Ogre_Character_Overview.png"))
+    ogre_set = pygame.transform.scale(ogre_set,(844,420))
+    next_page = pygame.image.load(resource_path("./Game_Assets/Character_Name/forward_button.png"))
+    next_page = pygame.transform.scale(next_page,(80,80))                                              
+
+    name_input = []
+    name_str = ''
+    change_click = False
+    click = False
+    while True:
+        mx, my = pygame.mouse.get_pos()
+        screen.blit(bg,(0,0))
+        screen.blit(ogre_set,(22,140))
+        screen.blit(next_page,(800,25))                                                  
+        text_surface = base_font.render(name_str,True,(255,255,255))
+        screen.blit(text_surface,(60, 440))
+
+
+        change_click = False
+        click = False
+        # Event Collections
+        for event in pygame.event.get():
+            # Function to quit game
+            if event.type == QUIT:
+                event.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_BACKSPACE:
+                    if len(name_input) > 0:
+                        name_input.pop()
+                elif len(name_input) <= 10 and event.unicode.isalpha() == True:
+                    name_input += event.unicode
+                if event.key == K_RETURN:
+                    pass
+
+        name_str = ''.join(map(str, name_input))
+
+        pygame.display.update()
+        clock.tick(120)
 
     change_click = False
     click = False
@@ -349,7 +389,7 @@ def team_setting():
         clock.tick(120)
 
 def main():
-    main_menu_page()
+    team_setting()
 
 # Main ========================================================
 main()

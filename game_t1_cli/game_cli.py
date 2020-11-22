@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from random import randint
+from random import randint, random
 
 
 # For absolute path in any devices ===============================================
@@ -41,16 +41,17 @@ class Unit:
         if TARGET.DEF > self.ATK:
             pass
         else:
-            total_damage = self.ATK - TARGET.DEF + randint(0,6)
-            self.HP -= TARGET.DEF    
-            TARGET.HP -= total_damage
+            if self.ACCURACY >= random():
+                total_damage = self.ATK - TARGET.DEF + randint(0,6)
+                self.HP -= TARGET.DEF
+                TARGET.HP -= total_damage
 
-            # EXP system
-            self.EXP += total_damage
-            TARGET.EXP += TARGET.DEF
-            
-            if total_damage >= 10:
-                self.EXP = int(self.EXP * 1.2)
+                # EXP system
+                self.EXP += total_damage
+                TARGET.EXP += TARGET.DEF
+                
+                if total_damage >= 10:
+                    self.EXP = int(self.EXP * 1.2)
 
             if TARGET.HP == 0:
                 TARGET.ALIVE = False
@@ -124,15 +125,6 @@ class Unit:
 
         self.rank_up()
         TARGET.rank_up()
-        
-        # def accuracy(self, percentage):
-        # probability = percentage * 0.01
-        # random = random.random()
-        # if probability >= random:
-        #      def.attack                  # if 및 else 검토 필요
-        # else:
-        #     print("Miss")
-        #     pass
     
     def rank_up(self):
         if self.EXP >= 100:
@@ -155,18 +147,21 @@ class Ogre(Unit):
         Unit.__init__(self)
         self.ID = int(excel_file['ID'][0])
         self.MAX_ID = self.ID + 3
+        self.ACCURACY = 0.5
 
 class Knight(Unit):
     def __init__(self):
         Unit.__init__(self)
         self.ID = int(excel_file['ID'][3])
         self.MAX_ID = self.ID + 3
+        self.ACCURACY = 1
 
 class Sorcerer(Unit):
     def __init__(self):
         Unit.__init__(self)
         self.ID = int(excel_file['ID'][6])
         self.MAX_ID = self.ID + 3
+        self.ACCURACY = 1
 
 # FUNCTIONS ===============================================
 # Main Menu
@@ -274,19 +269,16 @@ def setting_RN():
         print("┃                                                                ┃")
         print("┃       1. [OGRE]                                                ┃")
         print("┃          Have Strong Power, but have 50% to miss               ┃")
-        print("┃               HP = {0} / ATK = {1} / DEF = {2}                   ┃" .format(excel_file['HP'][0], excel_file['ATK'][0], excel_file['DEF'][0]))
-        print("┃               [One Hidden Skill in Rank 3]                     ┃")
+        print("┃               HP = {0} / ATK = {1} / DEF = {2}                      ┃" .format(excel_file['HP'][0], excel_file['ATK'][0], excel_file['DEF'][0]))
         print("┃                                                                ┃")
         print("┃       2. [KNIGHT]                                              ┃")
         print("┃          Have Decent Power and Strong Defence                  ┃")
-        print("┃               HP = {0} / ATK = {1} / DEF = {2}                   ┃" .format(excel_file['HP'][3], excel_file['ATK'][3], excel_file['DEF'][3]))
-        print("┃               [One Hidden Skill in Rank 3]                     ┃")
+        print("┃               HP = {0} / ATK = {1} / DEF = {2}                      ┃" .format(excel_file['HP'][3], excel_file['ATK'][3], excel_file['DEF'][3]))
         print("┃                                                                ┃")
         print("┃       3. [SORCERER]                                            ┃")
         print("┃          Have Weak Power and Defence, but can cast magic       ┃")
-        print("┃               Magic Skills : {0}, {1}, and {2}          ┃" .format(excel_file['SP 1'][6], excel_file['SP 2'][6], excel_file['SP 3'][6]))
-        print("┃               HP = {0} / ATK = {1} / DEF = {2}                    ┃" .format(excel_file['HP'][6], excel_file['ATK'][6], excel_file['DEF'][6]))
-        print("┃               [One Hidden Skill in Rank 3]                     ┃")
+        print("┃               Magic Skills : Heal                              ┃")
+        print("┃               HP = {0} / ATK = {1} / DEF = {2}                      ┃" .format(excel_file['HP'][6], excel_file['ATK'][6], excel_file['DEF'][6]))
         print("┃                                                                ┃")
         print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
         
@@ -299,18 +291,18 @@ def setting_RN():
             print("┃                                                                ┃")
             print("┃       1. [OGRE]                                                ┃")
             print("┃          Have Strong Power, but have 50% to miss               ┃")
-            print("┃               HP = {0} / ATK = {1} / DEF = {2}                   ┃" .format(excel_file['HP'][0], excel_file['ATK'][0], excel_file['DEF'][0]))
+            print("┃               HP = {0} / ATK = {1} / DEF = {2}                      ┃" .format(excel_file['HP'][0], excel_file['ATK'][0], excel_file['DEF'][0]))
             print("┃               [One Hidden Skill in Rank 3]                     ┃")
             print("┃                                                                ┃")
             print("┃       2. [KNIGHT]                                              ┃")
             print("┃          Have Decent Power and Strong Defence                  ┃")
-            print("┃               HP = {0} / ATK = {1} / DEF = {2}                   ┃" .format(excel_file['HP'][3], excel_file['ATK'][3], excel_file['DEF'][3]))
+            print("┃               HP = {0} / ATK = {1} / DEF = {2}                      ┃" .format(excel_file['HP'][3], excel_file['ATK'][3], excel_file['DEF'][3]))
             print("┃               [One Hidden Skill in Rank 3]                     ┃")
             print("┃                                                                ┃")
             print("┃       3. [SORCERER]                                            ┃")
             print("┃          Have Weak Power and Defence, but can cast magic       ┃")
-            print("┃               Magic Skills : {0}, {1}, and {2}          ┃" .format(excel_file['SP 1'][6], excel_file['SP 2'][6], excel_file['SP 3'][6]))
-            print("┃               HP = {0} / ATK = {1} / DEF = {2}                    ┃" .format(excel_file['HP'][6], excel_file['ATK'][6], excel_file['DEF'][6]))
+            print("┃               Magic Skills : Heal                              ┃")
+            print("┃               HP = {0} / ATK = {1} / DEF = {2}                       ┃" .format(excel_file['HP'][6], excel_file['ATK'][6], excel_file['DEF'][6]))
             print("┃               [One Hidden Skill in Rank 3]                     ┃")
             print("┃                                                                ┃")
             print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
@@ -366,18 +358,18 @@ def setting_RN():
         print("┃                                                                ┃")
         print("┃       1. [OGRE]                                                ┃")
         print("┃          Have Strong Power, but have 50% to miss               ┃")
-        print("┃               HP = {0} / ATK = {1} / DEF = {2}                   ┃" .format(excel_file['HP'][0], excel_file['ATK'][0], excel_file['DEF'][0]))
+        print("┃               HP = {0} / ATK = {1} / DEF = {2}                      ┃" .format(excel_file['HP'][0], excel_file['ATK'][0], excel_file['DEF'][0]))
         print("┃               [One Hidden Skill in Rank 3]                     ┃")
         print("┃                                                                ┃")
         print("┃       2. [KNIGHT]                                              ┃")
         print("┃          Have Decent Power and Strong Defence                  ┃")
-        print("┃               HP = {0} / ATK = {1} / DEF = {2}                   ┃" .format(excel_file['HP'][3], excel_file['ATK'][3], excel_file['DEF'][3]))
+        print("┃               HP = {0} / ATK = {1} / DEF = {2}                      ┃" .format(excel_file['HP'][3], excel_file['ATK'][3], excel_file['DEF'][3]))
         print("┃               [One Hidden Skill in Rank 3]                     ┃")
         print("┃                                                                ┃")
         print("┃       3. [SORCERER]                                            ┃")
         print("┃          Have Weak Power and Defence, but can cast magic       ┃")
-        print("┃               Magic Skills : {0}, {1}, and {2}          ┃" .format(excel_file['SP 1'][6], excel_file['SP 2'][6], excel_file['SP 3'][6]))
-        print("┃               HP = {0} / ATK = {1} / DEF = {2}                    ┃" .format(excel_file['HP'][6], excel_file['ATK'][6], excel_file['DEF'][6]))
+        print("┃               Magic Skills : Heal                              ┃")
+        print("┃               HP = {0} / ATK = {1} / DEF = {2}                      ┃" .format(excel_file['HP'][6], excel_file['ATK'][6], excel_file['DEF'][6]))
         print("┃               [One Hidden Skill in Rank 3]                     ┃")
         print("┃                                                                ┃")
         print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
