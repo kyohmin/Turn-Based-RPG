@@ -38,28 +38,27 @@ class Unit:
         return self.NAME, self.RACE, self.HP, self.ATK, self.DEF, self.FROZEN, self.POISONED, self.EXP, self.RANK, self.ALIVE
     
     def attack(self, TARGET):
-        if:
-            if self.ACCURACY >= random():
-                if self.ATK < TARGET.DEF:
-                    total_damage = randint(0,6)
-                else:    
-                    total_damage = self.ATK - TARGET.DEF + randint(0,6)
-                self.HP -= TARGET.DEF
-                TARGET.HP -= total_damage
+        if self.ACCURACY >= random():
+            if self.ATK < TARGET.DEF:
+                total_damage = randint(0,6)
+            else:    
+                total_damage = self.ATK - TARGET.DEF + randint(0,6)
+            self.HP -= TARGET.DEF
+            TARGET.HP -= total_damage
 
-                # EXP system
-                self.EXP += total_damage
-                TARGET.EXP += TARGET.DEF
-                
-                if total_damage >= 10:
-                    self.EXP = int(self.EXP * 1.2)
+            # EXP system
+            self.EXP += total_damage
+            TARGET.EXP += TARGET.DEF
+            
+            if total_damage >= 10:
+                self.EXP = int(self.EXP * 1.2)
 
-            if TARGET.HP == 0:
-                TARGET.ALIVE = False
-                self.EXP = int(self.EXP * 1.5)
+        if TARGET.HP == 0:
+            TARGET.ALIVE = False
+            self.EXP = int(self.EXP * 1.5)
 
-            self.rank_up()
-            TARGET.rank_up()
+        self.rank_up()
+        TARGET.rank_up()
 
         if TARGET.HP <= 0:
             if TARGET.TEAM == "ALLY":
