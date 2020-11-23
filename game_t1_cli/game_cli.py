@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import time
-from random import randint, random
+from random import randint, random, choice
 
 
 # For absolute path in any devices ===============================================
@@ -25,7 +25,7 @@ class Unit:
 
     def __init__(self):
         self.RANK = 0
-        self.EXP = 100
+        self.EXP = 40
         self.FIGHTABLE = True
         self.ALIVE = True
         self.FROZEN = False
@@ -83,7 +83,7 @@ class Unit:
         TARGET.rank_up()
     
     def rank_up(self):
-        if self.EXP >= 100:
+        if self.EXP >= 40:
             if self.ID < self.MAX_ID:
                 self.EXP = 0
                 self.RACE = str(excel_file['Race'][self.ID])
@@ -403,6 +403,125 @@ def setting_RN():
         enemy_object[num].set_NT(name, "ENEMY")
         clean_screen()
 
+def setting_RN_AI():
+    sample_names = ['James', 'Julio', 'Nick', 'John', 'Franklin', 'Bryan']
+    names_list = []
+    for num in range(num_players):
+        # For ALLY ===================================================================
+        clean_screen()
+        print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+        print("┃               <CHOOSE THE RACE OF THE ALLY>                    ┃")
+        print("┃                                                                ┃")
+        print("┃       1. [OGRE]                                                ┃")
+        print("┃          Have Strong Power, but have 50% to miss               ┃")
+        print("┃               HP = {0} / ATK = {1} / DEF = {2}                      ┃" .format(excel_file['HP'][0], excel_file['ATK'][0], excel_file['DEF'][0]))
+        print("┃                                                                ┃")
+        print("┃       2. [KNIGHT]                                              ┃")
+        print("┃          Have Decent Power and Strong Defence                  ┃")
+        print("┃               HP = {0} / ATK = {1} / DEF = {2}                      ┃" .format(excel_file['HP'][3], excel_file['ATK'][3], excel_file['DEF'][3]))
+        print("┃                                                                ┃")
+        print("┃       3. [SORCERER]                                            ┃")
+        print("┃          Have Weak Power and Defence, but can cast magic       ┃")
+        print("┃               Magic Skills : Heal                              ┃")
+        print("┃               HP = {0} / ATK = {1} / DEF = {2}                      ┃" .format(excel_file['HP'][6], excel_file['ATK'][6], excel_file['DEF'][6]))
+        print("┃                                                                ┃")
+        print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
+        # Check Input
+        race_input = input("\nPlease Enter the Number (1~3) : ")
+        clean_screen()
+
+        while not race_input.isdigit() or int(race_input) <= 0 or int(race_input) > 3:
+            clean_screen()
+            print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+            print("┃                     You Entered Wrong Value                    ┃")
+            print("┃                                                                ┃")
+            print("┃       1. [OGRE]                                                ┃")
+            print("┃          Have Strong Power, but have 50% to miss               ┃")
+            print("┃               HP = {0} / ATK = {1} / DEF = {2}                      ┃" .format(excel_file['HP'][0], excel_file['ATK'][0], excel_file['DEF'][0]))
+            print("┃                                                                ┃")
+            print("┃       2. [KNIGHT]                                              ┃")
+            print("┃          Have Decent Power and Strong Defence                  ┃")
+            print("┃               HP = {0} / ATK = {1} / DEF = {2}                      ┃" .format(excel_file['HP'][3], excel_file['ATK'][3], excel_file['DEF'][3]))
+            print("┃                                                                ┃")
+            print("┃       3. [SORCERER]                                            ┃")
+            print("┃          Have Weak Power and Defence, but can cast magic       ┃")
+            print("┃               Magic Skills : Heal                              ┃")
+            print("┃               HP = {0} / ATK = {1} / DEF = {2}                      ┃" .format(excel_file['HP'][6], excel_file['ATK'][6], excel_file['DEF'][6]))
+            print("┃                                                                ┃")
+            print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
+            race_input = input("\nPlease Enter the Number (1~3) : ")
+            clean_screen()
+        race_input = int(race_input)
+
+        # Assign Object in List
+        if race_input == 1:
+            ally_object[num] = Ogre()
+            race_input = "'Ogre'?    "
+        elif race_input == 2:
+            ally_object[num] = Knight()
+            race_input = "'Knight'?  "
+        elif race_input == 3:
+            ally_object[num] = Sorcerer()
+            race_input = "'Sorcerer'?"
+
+        # Naming the Object
+        clean_screen()
+        print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+        print("┃          <GIVE A NAME TO YOUR ALLY>        ┃")
+        print("┃                                            ┃")
+        print("┃        * Do not type blank or space        ┃")
+        print("┃                                            ┃")
+        print("┃     What is the name of your {0}   ┃" .format(race_input))
+        print("┃                                            ┃")
+        print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
+
+        # Check Input
+        name = input("\nPlease Write the NAME : ")
+        clean_screen()
+        name = name.strip()
+        while name == '' or len(name) > 20 or name in names_list:
+            clean_screen()
+            print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+            print("┃           You Entered Wrong Value          ┃")
+            print("┃                                            ┃")
+            print("┃        * Do not type blank or space        ┃")
+            print("┃                                            ┃")
+            print("┃     What is the name of your {0}   ┃" .format(race_input))
+            print("┃                                            ┃")
+            print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
+            name = input("\nPlease Write the NAME : ")
+            name = name.strip()
+            clean_screen()
+        names_list.append(name)
+
+        ally_object[num].set_NT(name, "ALLY")
+
+        if Unit.ally_counter == 1:
+            enemy_object[0] = Knight()
+            enemy_object[0].set_NT(choice(sample_names) + '_1', "ENEMY")
+        elif Unit.ally_counter == 2:
+            if randint(0,2) == 1:
+                enemy_object[0] = Knight()
+                enemy_object[0].set_NT(choice(sample_names) + '_1', "ENEMY")
+                enemy_object[1] = Knight()
+                enemy_object[1].set_NT(choice(sample_names) + '_2', "ENEMY")
+            elif randint(0,2) == 2:
+                enemy_object[0] = Sorcerer()
+                enemy_object[0].set_NT(choice(sample_names) + '_1', "ENEMY")
+                enemy_object[1] = Knight()
+                enemy_object[1].set_NT(choice(sample_names) + '_2', "ENEMY")
+            else:
+                enemy_object[0] = Ogre()
+                enemy_object[0].set_NT(choice(sample_names) + '_1', "ENEMY")
+                enemy_object[1] = Knight()
+                enemy_object[1].set_NT(choice(sample_names) + '_2', "ENEMY")
+        elif Unit.ally_counter == 3:
+            pass
+        elif Unit.ally_counter == 4:
+            pass
+        elif Unit.ally_counter == 5:
+            pass
+
 def seg_UI(num):
     if unit_stat[1] == "Ogre" or unit_stat[1] == "Knight":
         print("┃        HP : {0}        ATK : {1}        DEF : {2}" .format(unit_stat[2], unit_stat[3], unit_stat[4]) + " "*(23 - (len(str(unit_stat[2])) + len(str(unit_stat[3])) + len(str(unit_stat[4])))) + "┃                             ┃                            ┃")
@@ -683,6 +802,128 @@ def game_logic():
 
         turn += 1
 
+def game_logic_AI():
+    global turn
+    global GAME
+
+    turn = 0
+    GAME = True
+    while GAME:
+        main_UI()
+        ally_UI()
+        
+        # Ally's turn - Ally select who attacks who
+        if len(available_ally) > 0 and len(available_enemy) > 0:
+            unit_select = input("\n Choose the available unit in your team (#) : ")
+            while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally) or ally_object[int(unit_select) - 1].show_stats()[9] == False:
+                ally_UI()
+                print("\n YOU ENTERED WRONG VALUE")
+                unit_select = input("\n Choose the available unit in your team (#) : ")
+
+            if ally_object[int(unit_select) - 1].show_stats()[1] == "Sorcerer":
+                sorcererheal_UI()
+                move_select = input("\n Choose your move (1~2) : ")
+                while not move_select.isdigit() or int(move_select) < 0 or int(move_select) > 2:
+                    sorcererheal_UI()
+                    print("\n YOU ENTERED WRONG VALUE")
+                    move_select = input("\n Choose your move (1~2) : ")
+
+                if int(move_select) == 1:
+                    sorcererattack_UI()
+                    opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
+                        sorcererattack_UI()
+                        print("\n YOU ENTERED WRONG VALUE")
+                        opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+                    ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+                    print(ally_object[int(unit_select) - 1].show_stats()[0],"attacked",enemy_object[int(unit_select) - 1].show_stats()[0])
+                    countdown(int(t))
+                    
+
+                elif int(move_select) == 2:
+                    sorcererheal_UI()
+                    opponent_select = input("\n Choose the unit that you want to spell (#) : ")
+                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
+                        sorcererheal_UI()
+                        print("\n YOU ENTERED WRONG VALUE")
+                        opponent_select = input("\n Choose the unit that you want to spell (#) : ")
+                    ally_object[int(unit_select) - 1].heal(ally_object[int(opponent_select)-1])
+                    print(ally_object[int(unit_select) - 1].show_stats()[0],"healed",ally_object[int(unit_select) - 1].show_stats()[0])
+                    countdown(int(t))
+
+            else:
+                enemy_UI()
+                opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+                while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
+                    enemy_UI()
+                    print("\n YOU ENTERED WRONG VALUE")
+                    opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+                ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+                print(ally_object[int(unit_select) - 1].show_stats()[0],"attacked",enemy_object[int(unit_select) - 1].show_stats()[0])
+                countdown(int(t))
+
+            if Unit.ally_counter == 0 or Unit.enemy_counter == 0:
+                main_UI()
+                break
+        
+            main_UI()
+            enemy_UI()
+
+            # Enemy's turn - Enemy select who attacks who
+            if len(available_ally) > 0 and len(available_enemy) > 0:
+                unit_select = input("\n Choose the available unit in your team (#) : ")
+                while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally) or enemy_object[int(unit_select) - 1].show_stats()[9] == False:
+                    enemy_UI()
+                    print("\n YOU ENTERED WRONG VALUE")
+                    unit_select = input("\n Choose the avaiable unit in your team (#) : ")
+
+                if enemy_object[int(unit_select) - 1].show_stats()[1] == "Sorcerer":
+                    sorcererenemy_UI()
+                    move_select = input("\n Choose your move (1~2) : ")
+                    while not move_select.isdigit() or int(move_select) < 0 or int(move_select) > 2:
+                        sorcererenemy_UI()
+                        print("\n YOU ENTERED WRONG VALUE")
+                        move_select = input("\n Choose your move (1~2) : ")
+
+                    if int(move_select) == 1:
+                        ally_UI()
+                        opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
+                            ally_UI()
+                            print("\n YOU ENTERED WRONG VALUE")
+                            opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+                        enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
+                        print(enemy_object[int(unit_select) - 1].show_stats()[0],"attacked",ally_object[int(unit_select) - 1].show_stats()[0])
+                        countdown(int(t))
+
+                    elif int(move_select) == 2:
+                        sorcererenemy_UI()
+                        opponent_select = input("\n Choose the unit that you want to spell (#) : ")
+                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
+                            sorcererenemy_UI()
+                            print("\n YOU ENTERED WRONG VALUE")
+                            opponent_select = input("\n Choose the unit that you want to spell (#) : ")
+                        enemy_object[int(unit_select) - 1].heal(enemy_object[int(opponent_select)-1])
+                        print(enemy_object[int(unit_select) - 1].show_stats()[0],"healed",enemy_object[int(unit_select) - 1].show_stats()[0])
+                        countdown(int(t))
+                    
+                else:
+                    ally_UI()
+                    opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
+                        ally_UI()
+                        print("\n YOU ENTERED WRONG VALUE")
+                        opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+                    enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
+                    print(enemy_object[int(unit_select) - 1].show_stats()[0],"attacked",ally_object[int(unit_select) - 1].show_stats()[0])
+                    countdown(int(t))
+                    
+
+                if Unit.ally_counter == 0 or Unit.enemy_counter == 0:
+                    main_UI()
+                    break
+
+        turn += 1
 
 # Cleaning Screen
 def clean_screen():
@@ -702,6 +943,11 @@ def main():
             setting_size()
             list_objects()
             setting_RN()
+            game_logic()
+        elif game_type == 2:
+            setting_size()
+            list_objects()
+            setting_RN_AI()
             game_logic()
             
 
