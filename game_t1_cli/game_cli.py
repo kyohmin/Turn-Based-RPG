@@ -54,30 +54,38 @@ class Unit:
             if total_damage >= 10:
                 self.EXP += int(self.EXP * 1.2)
 
-        if TARGET.HP == 0:
-            TARGET.ALIVE = False
-            self.EXP += int(self.EXP * 1.5)
-
-        self.rank_up()
-        TARGET.rank_up()
+        if self.HP <= 0:
+            self.ALIVE = False
 
         if TARGET.HP <= 0:
+            TARGET.ALIVE = False
+            self.EXP += int(self.EXP * 1.5)
             if TARGET.TEAM == "ALLY":
                 Unit.ally_counter -= 1
             else:
                 Unit.enemy_counter -= 1
+        if self.HP <= 0:
+            self.ALIVE = False
+            if self.TEAM == "ALLY":
+                Unit.ally_counter -= 1
+            else:
+                Unit.enemy_counter -= 1
+
+
+
+        self.rank_up()
+        TARGET.rank_up()
     
     def heal(self,TARGET):                            
-        if TARGET.TEAM == self.TEAM:
-            if self.RANK == 1:
-                TARGET.HP += 5
-                self.EXP += 5
-            elif self.RANK == 2:
-                TARGET.HP += 8
-                self.EXP += 5
-            else:
-                TARGET.HP += 10
-                self.EXP += 5
+        if self.RANK == 1:
+            TARGET.HP += 5
+            self.EXP += 5
+        elif self.RANK == 2:
+            TARGET.HP += 8
+            self.EXP += 5
+        else:
+            TARGET.HP += 10
+            self.EXP += 5
         
         self.rank_up()
         TARGET.rank_up()
@@ -667,7 +675,40 @@ def sorcererenemy_UI():
         unit_stat = enemy_object[num].show_stats()
         big_seg_UI(num)
     print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
+
+def resultally():
+    clean_screen()
+    print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+    print("┃                                                                                       ┃")
+    print("┃                                                                                       ┃")
+    print("┃                                   Congratulations!                                    ┃")
+    print("┃                                  The ally team won!                                   ┃") 
+    print("┃                                                                                       ┃") 
+    print("┃                                                                                       ┃") 
+    print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
     
+def resultenemy():
+    clean_screen()
+    print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+    print("┃                                                                                       ┃")
+    print("┃                                                                                       ┃")
+    print("┃                                   Congratulations!                                    ┃")
+    print("┃                                 The enemy team won!                                   ┃") 
+    print("┃                                                                                       ┃") 
+    print("┃                                                                                       ┃") 
+    print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
+
+def resultsame():
+    clean_screen()
+    print("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+    print("┃                                                                                       ┃")
+    print("┃                                                                                       ┃")
+    print("┃                                   Congratulations!                                    ┃")
+    print("┃                               The game finished a tie!                                ┃") 
+    print("┃                                                                                       ┃") 
+    print("┃                                                                                       ┃") 
+    print("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
+   
 # List for Objects
 def list_objects():
     global ally_object
@@ -682,17 +723,16 @@ def list_objects():
 def game_logic():
     global turn
     global GAME
-
-    turn = 0
+    turn = 1
     GAME = True
     while GAME:
         main_UI()
         ally_UI()
         
         # Ally's turn - Ally select who attacks who
-        if len(available_ally) > 0 and len(available_enemy) > 0:
+        if Unit.ally_counter > 0 and Unit.enemy_counter > 0:
             unit_select = input("\n Choose the available unit in your team (#) : ")
-            while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally) or ally_object[int(unit_select) - 1].show_stats()[9] == False:
+            while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > int(num_players) or ally_object[int(unit_select) - 1].show_stats()[9] == False:
                 ally_UI()
                 print("\n YOU ENTERED WRONG VALUE")
                 unit_select = input("\n Choose the available unit in your team (#) : ")
@@ -708,98 +748,110 @@ def game_logic():
                 if int(move_select) == 1:
                     sorcererattack_UI()
                     opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
+                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > int(num_players) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
                         sorcererattack_UI()
                         print("\n YOU ENTERED WRONG VALUE")
                         opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                    ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+                    ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])  
+
                     print(ally_object[int(unit_select) - 1].show_stats()[0],"attacked",enemy_object[int(unit_select) - 1].show_stats()[0])
                     countdown(int(t))
                     
 
                 elif int(move_select) == 2:
                     sorcererheal_UI()
-                    opponent_select = input("\n Choose the unit that you want to spell (#) : ")
-                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
+                    opponent_select = input("\n Choose the unit that you want to cast spell (#) : ")
+                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > int(num_players) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
                         sorcererheal_UI()
                         print("\n YOU ENTERED WRONG VALUE")
-                        opponent_select = input("\n Choose the unit that you want to spell (#) : ")
+                        opponent_select = input("\n Choose the unit that you want to cast spell (#) : ")
                     ally_object[int(unit_select) - 1].heal(ally_object[int(opponent_select)-1])
+
                     print(ally_object[int(unit_select) - 1].show_stats()[0],"healed",ally_object[int(unit_select) - 1].show_stats()[0])
                     countdown(int(t))
 
             else:
                 enemy_UI()
                 opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
+                while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > int(num_players) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
                     enemy_UI()
                     print("\n YOU ENTERED WRONG VALUE")
                     opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+                ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1]) 
                 print(ally_object[int(unit_select) - 1].show_stats()[0],"attacked",enemy_object[int(unit_select) - 1].show_stats()[0])
                 countdown(int(t))
 
-            if Unit.ally_counter == 0 or Unit.enemy_counter == 0:
-                main_UI()
-                break
+        elif Unit.ally_counter == 0:
+            resultenemy()
+            break
+        elif Unit.enemy_counter == 0:
+            resultally()
+            break
+        else:
+            resultsame()
+            break    
         
-            main_UI()
-            enemy_UI()
+        main_UI()
+        enemy_UI()
 
-            # Enemy's turn - Enemy select who attacks who
-            if len(available_ally) > 0 and len(available_enemy) > 0:
-                unit_select = input("\n Choose the available unit in your team (#) : ")
-                while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally) or enemy_object[int(unit_select) - 1].show_stats()[9] == False:
-                    enemy_UI()
-                    print("\n YOU ENTERED WRONG VALUE")
-                    unit_select = input("\n Choose the avaiable unit in your team (#) : ")
+        # Enemy's turn - Enemy select who attacks who
+        if Unit.ally_counter > 0 and Unit.enemy_counter > 0:
+            unit_select = input("\n Choose the available unit in your team (#) : ")
+            while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > int(num_players) or enemy_object[int(unit_select) - 1].show_stats()[9] == False:
+                enemy_UI()
+                print("\n YOU ENTERED WRONG VALUE")
+                unit_select = input("\n Choose the avaiable unit in your team (#) : ")
 
-                if enemy_object[int(unit_select) - 1].show_stats()[1] == "Sorcerer":
+            if enemy_object[int(unit_select) - 1].show_stats()[1] == "Sorcerer":
+                sorcererenemy_UI()
+                move_select = input("\n Choose your move (1~2) : ")
+                while not move_select.isdigit() or int(move_select) < 0 or int(move_select) > 2:
                     sorcererenemy_UI()
+                    print("\n YOU ENTERED WRONG VALUE")
                     move_select = input("\n Choose your move (1~2) : ")
-                    while not move_select.isdigit() or int(move_select) < 0 or int(move_select) > 2:
-                        sorcererenemy_UI()
-                        print("\n YOU ENTERED WRONG VALUE")
-                        move_select = input("\n Choose your move (1~2) : ")
 
-                    if int(move_select) == 1:
-                        ally_UI()
-                        opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
-                            ally_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                        enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
-                        print(enemy_object[int(unit_select) - 1].show_stats()[0],"attacked",ally_object[int(unit_select) - 1].show_stats()[0])
-                        countdown(int(t))
-
-                    elif int(move_select) == 2:
-                        sorcererenemy_UI()
-                        opponent_select = input("\n Choose the unit that you want to spell (#) : ")
-                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
-                            sorcererenemy_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            opponent_select = input("\n Choose the unit that you want to spell (#) : ")
-                        enemy_object[int(unit_select) - 1].heal(enemy_object[int(opponent_select)-1])
-                        print(enemy_object[int(unit_select) - 1].show_stats()[0],"healed",enemy_object[int(unit_select) - 1].show_stats()[0])
-                        countdown(int(t))
-                    
-                else:
+                if int(move_select) == 1:
                     ally_UI()
                     opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
+                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > int(num_players) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
                         ally_UI()
                         print("\n YOU ENTERED WRONG VALUE")
                         opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
                     enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
                     print(enemy_object[int(unit_select) - 1].show_stats()[0],"attacked",ally_object[int(unit_select) - 1].show_stats()[0])
                     countdown(int(t))
+
+                elif int(move_select) == 2:
+                    sorcererenemy_UI()
+                    opponent_select = input("\n Choose the unit that you want to cast spell (#) : ")
+                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > int(num_players) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
+                        sorcererenemy_UI()
+                        print("\n YOU ENTERED WRONG VALUE")
+                        opponent_select = input("\n Choose the unit that you want to cast spell (#) : ")
+                    enemy_object[int(unit_select) - 1].heal(enemy_object[int(opponent_select)-1])
+                    print(enemy_object[int(unit_select) - 1].show_stats()[0],"healed",enemy_object[int(unit_select) - 1].show_stats()[0])
+                    countdown(int(t))
                     
+            else:
+                ally_UI()
+                opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+                while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > int(num_players) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
+                    ally_UI()
+                    print("\n YOU ENTERED WRONG VALUE")
+                    opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+                enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1]) 
+                print(enemy_object[int(unit_select) - 1].show_stats()[0],"attacked",ally_object[int(unit_select) - 1].show_stats()[0])
+                countdown(int(t))
 
-                if Unit.ally_counter == 0 or Unit.enemy_counter == 0:
-                    main_UI()
-                    break
-
+        elif Unit.ally_counter == 0:
+            resultenemy()
+            break
+        elif Unit.enemy_counter == 0:
+            resultally()
+            break
+        else:
+            resultsame()
+            break           
         turn += 1
 
 def game_logic_AI():
@@ -813,9 +865,9 @@ def game_logic_AI():
         ally_UI()
         
         # Ally's turn - Ally select who attacks who
-        if len(available_ally) > 0 and len(available_enemy) > 0:
+        if  Unit.ally_counter > 0 and Unit.enemy_counter > 0:
             unit_select = input("\n Choose the available unit in your team (#) : ")
-            while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally) or ally_object[int(unit_select) - 1].show_stats()[9] == False:
+            while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > int(num_players) or ally_object[int(unit_select) - 1].show_stats()[9] == False:
                 ally_UI()
                 print("\n YOU ENTERED WRONG VALUE")
                 unit_select = input("\n Choose the available unit in your team (#) : ")
@@ -831,22 +883,22 @@ def game_logic_AI():
                 if int(move_select) == 1:
                     sorcererattack_UI()
                     opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
+                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > int(num_players) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
                         sorcererattack_UI()
                         print("\n YOU ENTERED WRONG VALUE")
                         opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                    ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+                    ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])  
                     print(ally_object[int(unit_select) - 1].show_stats()[0],"attacked",enemy_object[int(unit_select) - 1].show_stats()[0])
                     countdown(int(t))
                     
 
                 elif int(move_select) == 2:
                     sorcererheal_UI()
-                    opponent_select = input("\n Choose the unit that you want to spell (#) : ")
-                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
+                    opponent_select = input("\n Choose the unit that you want to cast spell (#) : ")
+                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > int(num_players) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
                         sorcererheal_UI()
                         print("\n YOU ENTERED WRONG VALUE")
-                        opponent_select = input("\n Choose the unit that you want to spell (#) : ")
+                        opponent_select = input("\n Choose the unit that you want to cast spell (#) : ")
                     ally_object[int(unit_select) - 1].heal(ally_object[int(opponent_select)-1])
                     print(ally_object[int(unit_select) - 1].show_stats()[0],"healed",ally_object[int(unit_select) - 1].show_stats()[0])
                     countdown(int(t))
@@ -854,75 +906,88 @@ def game_logic_AI():
             else:
                 enemy_UI()
                 opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
+                while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > int(num_players) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
                     enemy_UI()
                     print("\n YOU ENTERED WRONG VALUE")
                     opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1])
+                ally_object[int(unit_select) - 1].attack(enemy_object[int(opponent_select)-1]) 
+
                 print(ally_object[int(unit_select) - 1].show_stats()[0],"attacked",enemy_object[int(unit_select) - 1].show_stats()[0])
                 countdown(int(t))
 
-            if Unit.ally_counter == 0 or Unit.enemy_counter == 0:
-                main_UI()
-                break
+        elif Unit.ally_counter == 0:
+            resultenemy()
+            break
+        elif Unit.enemy_counter == 0:
+            resultally()
+            break
+        else:
+            resultsame()
+            break   
         
-            main_UI()
-            enemy_UI()
+        main_UI()
+        enemy_UI()
 
-            # Enemy's turn - Enemy select who attacks who
-            if len(available_ally) > 0 and len(available_enemy) > 0:
-                unit_select = input("\n Choose the available unit in your team (#) : ")
-                while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > len(available_ally) or enemy_object[int(unit_select) - 1].show_stats()[9] == False:
-                    enemy_UI()
-                    print("\n YOU ENTERED WRONG VALUE")
-                    unit_select = input("\n Choose the avaiable unit in your team (#) : ")
+        # Enemy's turn - Enemy select who attacks who
+        if Unit.ally_counter > 0 and Unit.enemy_counter > 0:
+            unit_select = input("\n Choose the available unit in your team (#) : ")
+            while not unit_select.isdigit() or int(unit_select) < 0 or int(unit_select) > int(num_players) or enemy_object[int(unit_select) - 1].show_stats()[9] == False:
+                enemy_UI()
+                print("\n YOU ENTERED WRONG VALUE")
+                unit_select = input("\n Choose the avaiable unit in your team (#) : ")
 
-                if enemy_object[int(unit_select) - 1].show_stats()[1] == "Sorcerer":
+            if enemy_object[int(unit_select) - 1].show_stats()[1] == "Sorcerer":
+                sorcererenemy_UI()
+                move_select = input("\n Choose your move (1~2) : ")
+                while not move_select.isdigit() or int(move_select) < 0 or int(move_select) > 2:
                     sorcererenemy_UI()
+                    print("\n YOU ENTERED WRONG VALUE")
                     move_select = input("\n Choose your move (1~2) : ")
-                    while not move_select.isdigit() or int(move_select) < 0 or int(move_select) > 2:
-                        sorcererenemy_UI()
-                        print("\n YOU ENTERED WRONG VALUE")
-                        move_select = input("\n Choose your move (1~2) : ")
 
-                    if int(move_select) == 1:
-                        ally_UI()
-                        opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
-                            ally_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                        enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
-                        print(enemy_object[int(unit_select) - 1].show_stats()[0],"attacked",ally_object[int(unit_select) - 1].show_stats()[0])
-                        countdown(int(t))
-
-                    elif int(move_select) == 2:
-                        sorcererenemy_UI()
-                        opponent_select = input("\n Choose the unit that you want to spell (#) : ")
-                        while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
-                            sorcererenemy_UI()
-                            print("\n YOU ENTERED WRONG VALUE")
-                            opponent_select = input("\n Choose the unit that you want to spell (#) : ")
-                        enemy_object[int(unit_select) - 1].heal(enemy_object[int(opponent_select)-1])
-                        print(enemy_object[int(unit_select) - 1].show_stats()[0],"healed",enemy_object[int(unit_select) - 1].show_stats()[0])
-                        countdown(int(t))
-                    
-                else:
+                if int(move_select) == 1:
                     ally_UI()
                     opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
-                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > len(available_enemy) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
+                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > int(num_players) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
                         ally_UI()
                         print("\n YOU ENTERED WRONG VALUE")
                         opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
                     enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1])
+
                     print(enemy_object[int(unit_select) - 1].show_stats()[0],"attacked",ally_object[int(unit_select) - 1].show_stats()[0])
                     countdown(int(t))
+
+                elif int(move_select) == 2:
+                    sorcererenemy_UI()
+                    opponent_select = input("\n Choose the unit that you want to cast spell (#) : ")
+                    while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > int(num_players) or enemy_object[int(opponent_select) - 1].show_stats()[9] == False:
+                        sorcererenemy_UI()
+                        print("\n YOU ENTERED WRONG VALUE")
+                        opponent_select = input("\n Choose the unit that you want to cast spell (#) : ")
+                    enemy_object[int(unit_select) - 1].heal(enemy_object[int(opponent_select)-1])
+                    print(enemy_object[int(unit_select) - 1].show_stats()[0],"healed",enemy_object[int(unit_select) - 1].show_stats()[0])
+                    countdown(int(t))
                     
+            else:
+                ally_UI()
+                opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+                while not opponent_select.isdigit() or int(opponent_select) < 0 or int(opponent_select) > int(num_players) or ally_object[int(opponent_select) - 1].show_stats()[9] == False:
+                    ally_UI()
+                    print("\n YOU ENTERED WRONG VALUE")
+                    opponent_select = input("\n Choose the enemy that you want to attack (#) : ")
+                enemy_object[int(unit_select) - 1].attack(ally_object[int(opponent_select)-1]) 
 
-                if Unit.ally_counter == 0 or Unit.enemy_counter == 0:
-                    main_UI()
-                    break
-
+                print(enemy_object[int(unit_select) - 1].show_stats()[0],"attacked",ally_object[int(unit_select) - 1].show_stats()[0])
+                countdown(int(t))
+                    
+        elif Unit.ally_counter == 0:
+            resultenemy()
+            break
+        elif Unit.enemy_counter == 0:
+            resultally()
+            break
+        else:
+            resultsame()
+            break
         turn += 1
 
 # Cleaning Screen
