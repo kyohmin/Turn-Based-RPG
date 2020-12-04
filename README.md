@@ -9,9 +9,6 @@ pip3 install xlrd
 pip3 install pygame
 ```
 
-## Flow Chart
-[Draw.io - Flow Chart](https://drive.google.com/file/d/1hxlWkB27PXOuRsVVTVxezgpVcjJ-m0PR/view?usp=sharing "Flow Chart")
-
 ## Members
 + Takayuki Suzuki
 + Ahmad Mahfoudz
