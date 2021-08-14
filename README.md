@@ -17,7 +17,7 @@ pip3 install pygame
 <img src="Game_Assets/Game_Result/Game_Result.jpg" width=500></img>
 
 ## Members
-+ Takayuki Suzuki
++ Kyoungho Min
 + Ahmad Mahfoudz
 + Eunseo Lee
 + Nayeon Kim
